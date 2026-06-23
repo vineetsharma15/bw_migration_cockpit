@@ -1,0 +1,39 @@
+{
+  "system": {
+    "id": "PRD-BW-01",
+    "label": "PRD-BW-01 (Production)",
+    "host": "bw-prd.corp.example.com:3200",
+    "release": "SAP BW 7.5 SP22",
+    "dbSize": "4.8 TB (HANA)",
+    "lastScan": "2026-06-18T09:42:00Z"
+  },
+  "readinessScore": 74,
+  "readinessDelta": 6,
+  "totalObjects": 2847,
+  "activeObjects": 2214,
+  "inactiveObjects": 633,
+  "customCodePct": 34,
+  "openRisks": { "total": 18, "high": 5, "medium": 9, "low": 4 },
+  "pendingDecisions": 312,
+  "objectInventory": [
+    { "type": "ADSO",               "total": 348,  "migrate": 241, "retire": 62,  "pending": 45,  "status": "On Track" },
+    { "type": "CompositeProvider",  "total": 124,  "migrate": 88,  "retire": 14,  "pending": 22,  "status": "Partial"  },
+    { "type": "BEx Query",          "total": 892,  "migrate": 503, "retire": 201, "pending": 188, "status": "In Review" },
+    { "type": "Extractor (2LIS)",   "total": 234,  "migrate": 178, "retire": 12,  "pending": 44,  "status": "Analyzing" },
+    { "type": "Process Chain",      "total": 156,  "migrate": 98,  "retire": 28,  "pending": 30,  "status": "On Track" },
+    { "type": "InfoObject",         "total": 1093, "migrate": 820, "retire": 180, "pending": 93,  "status": "On Track" }
+  ],
+  "aiRecommendations": [
+    { "icon": "🎯", "priority": "High Priority", "text": "44 BEx Queries with >100 users/month should be migrated before Wave 2 cutover to avoid business disruption.", "confidence": 92 },
+    { "icon": "⚡", "priority": "Quick Win",     "text": "62 ADSOs with zero usage in 12 months can be retired immediately, reducing migration scope by 18%.",          "confidence": 97 },
+    { "icon": "🔗", "priority": "Dependency Risk","text": "Extractor 2LIS_02_ITM has 34 downstream ADSOs. Convert to CDS before Wave 1 to prevent chain failures.",   "confidence": 88 },
+    { "icon": "📊", "priority": "Opportunity",   "text": "12 Finance ADSOs share 78% of dimensions — consolidate into 2 BDC data products.",                          "confidence": 85 }
+  ],
+  "topRisks": [
+    { "description": "SAP S/4HANA CDS view coverage gap for SD extractors",  "severity": "High",   "owner": "Ravi K."  },
+    { "description": "BEx Query 0SD_C03 has circular dependency",             "severity": "High",   "owner": "Priya M." },
+    { "description": "12 legacy DSOs use obsolete transformations",           "severity": "Medium", "owner": "Team"     },
+    { "description": "Data quality score below threshold in FI-AR",           "severity": "Medium", "owner": "Ana S."   },
+    { "description": "Wave 2 start date at risk due to resource gap",         "severity": "Medium", "owner": "PM"       }
+  ]
+}

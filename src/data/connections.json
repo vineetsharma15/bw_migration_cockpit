@@ -1,0 +1,103 @@
+{
+  "bwSystems": [
+    {
+      "id": "BW-PRD-01",
+      "label": "PRD-BW-01",
+      "description": "SAP BW Production System",
+      "host": "bw-prd.corp.example.com",
+      "port": 3200,
+      "client": "100",
+      "release": "SAP BW 7.5 SP22",
+      "dbType": "SAP HANA",
+      "dbSize": "4.8 TB",
+      "systemType": "Production",
+      "status": "Connected",
+      "lastTested": "2026-06-18T09:40:00Z",
+      "objectCount": 2847,
+      "authMethod": "Service User (RFC)",
+      "rfcUser": "MIGRATION_RFC",
+      "scanEnabled": true,
+      "notes": "Primary production BW — read-only RFC user. Full scan completed June 18."
+    },
+    {
+      "id": "BW-QAS-01",
+      "label": "QAS-BW-01",
+      "description": "SAP BW Quality System",
+      "host": "bw-qas.corp.example.com",
+      "port": 3200,
+      "client": "200",
+      "release": "SAP BW 7.5 SP22",
+      "dbType": "SAP HANA",
+      "dbSize": "1.2 TB",
+      "systemType": "Quality",
+      "status": "Connected",
+      "lastTested": "2026-06-17T14:00:00Z",
+      "objectCount": 2839,
+      "authMethod": "Service User (RFC)",
+      "rfcUser": "MIGRATION_RFC",
+      "scanEnabled": true,
+      "notes": "Used for validation and UAT testing before go-live."
+    },
+    {
+      "id": "BW-DEV-01",
+      "label": "DEV-BW-01",
+      "description": "SAP BW Development System",
+      "host": "bw-dev.corp.example.com",
+      "port": 3200,
+      "client": "300",
+      "release": "SAP BW 7.5 SP22",
+      "dbType": "SAP HANA",
+      "dbSize": "0.4 TB",
+      "systemType": "Development",
+      "status": "Error",
+      "lastTested": "2026-06-16T10:30:00Z",
+      "objectCount": null,
+      "authMethod": "Service User (RFC)",
+      "rfcUser": "MIGRATION_RFC",
+      "scanEnabled": false,
+      "notes": "Connection failing — RFC user password expired. Action required."
+    }
+  ],
+  "bdcTargets": [
+    {
+      "id": "BDC-PRD-01",
+      "label": "BDC Production",
+      "description": "SAP Business Data Cloud — Production Tenant",
+      "host": "corp-bdc.eu10.hcs.cloud.sap",
+      "tenantId": "CORP-BDC-PRD",
+      "region": "EU10 (Frankfurt)",
+      "datasphereSpace": "FIN_CORP_01, SD_ANALYTICS_01",
+      "status": "Connected",
+      "lastTested": "2026-06-18T09:45:00Z",
+      "authMethod": "OAuth 2.0 (Client Credentials)",
+      "clientId": "bdc-migration-client",
+      "publishedProducts": 1,
+      "draftProducts": 2,
+      "notes": "Primary BDC production tenant. Finance Core DP published. Sales and HR in draft."
+    },
+    {
+      "id": "BDC-DEV-01",
+      "label": "BDC Development",
+      "description": "SAP Business Data Cloud — Development Tenant",
+      "host": "corp-bdc-dev.eu10.hcs.cloud.sap",
+      "tenantId": "CORP-BDC-DEV",
+      "region": "EU10 (Frankfurt)",
+      "datasphereSpace": "DEV_SPACE_01",
+      "status": "Connected",
+      "lastTested": "2026-06-17T15:00:00Z",
+      "authMethod": "OAuth 2.0 (Client Credentials)",
+      "clientId": "bdc-migration-dev-client",
+      "publishedProducts": 0,
+      "draftProducts": 3,
+      "notes": "Used for prototyping and testing data product designs before promoting to production."
+    }
+  ],
+  "externalIntegrations": [
+    { "id": "INT-001", "name": "Jira Cloud",        "type": "Ticketing",       "url": "https://corp.atlassian.net",        "status": "Error",     "lastTested": "2026-06-18T09:45:00Z", "notes": "OAuth token expired — reconnect required" },
+    { "id": "INT-002", "name": "Microsoft Teams",   "type": "Notification",    "url": "https://teams.microsoft.com",       "status": "Connected", "lastTested": "2026-06-18T09:00:00Z", "notes": "Webhook active for migration alerts channel" },
+    { "id": "INT-003", "name": "ServiceNow",        "type": "ITSM",            "url": "https://corp.service-now.com",      "status": "Connected", "lastTested": "2026-06-17T12:00:00Z", "notes": "Change request creation for go-live events" },
+    { "id": "INT-004", "name": "Anthropic Claude",  "type": "AI Model",        "url": "https://api.anthropic.com",         "status": "Connected", "lastTested": "2026-06-18T09:42:00Z", "notes": "claude-sonnet-4-6 · All agents active" },
+    { "id": "INT-005", "name": "Infosys Topaz",     "type": "AI Fabric",       "url": "https://topaz.infosys.com",         "status": "Connected", "lastTested": "2026-06-18T09:40:00Z", "notes": "Orchestration layer · 8 agents registered" },
+    { "id": "INT-006", "name": "GitHub Enterprise", "type": "Source Control",  "url": "https://github.corp.example.com",   "status": "Connected", "lastTested": "2026-06-17T08:00:00Z", "notes": "CDS view code output pushed to migration-cds repo" }
+  ]
+}

@@ -1,0 +1,63 @@
+[
+  {
+    "id": "0SD_C03",
+    "name": "Customer Sales Analysis",
+    "infoProvider": "ZSD_BILLING_A via 0PROFIT_CTR_01A",
+    "usagePerMonth": 8900,
+    "complexity": "Very High",
+    "variables": [
+      { "name": "Customer (0CUSTOMER)",  "type": "Characteristic Variable", "mandatory": true  },
+      { "name": "Posting Date (0CALDAY)","type": "Date Range Variable",      "mandatory": true  },
+      { "name": "Sales Org (0SALESORG)", "type": "Characteristic Variable", "mandatory": true  },
+      { "name": "Material Group",        "type": "Characteristic Variable", "mandatory": false },
+      { "name": "Distribution Channel",  "type": "Characteristic Variable", "mandatory": false }
+    ],
+    "calculatedKFs": [
+      { "name": "Gross Margin %",    "formula": "(NR - COGS) / NR",  "bdcEquivalent": "Auto-mapped" },
+      { "name": "Avg Order Value",   "formula": "Revenue / Orders",   "bdcEquivalent": "Auto-mapped" },
+      { "name": "ZRKF_LEGACY_01",   "formula": "Deprecated aggr.",   "bdcEquivalent": "Manual req." }
+    ],
+    "keyFigures": ["Net Revenue","Gross Margin","Gross Margin %","Cost of Goods Sold","Order Quantity","Average Order Value","Returns Value"],
+    "risks": ["ZRKF_LEGACY_01 uses deprecated exception aggregation — needs manual review"],
+    "fsdDraft": {
+      "title": "Customer Sales Analysis (0SD_C03)",
+      "businessPurpose": "Provides sales teams with granular view of customer purchasing patterns, margin analysis and order trends across sales organizations.",
+      "primaryUsers": "Sales Controllers, Regional Sales Managers, CFO Office",
+      "avgMonthlyExecutions": 8900,
+      "bdcRecommendation": "Map to Sales Analytics Data Product in BDC Datasphere. Use SAC Story or embedded analytics for visualization. Gross Margin % to be modeled as calculated measure in BDC semantic layer."
+    }
+  },
+  {
+    "id": "0FI_C04",
+    "name": "GL Account Analysis",
+    "infoProvider": "0FI_GL_4",
+    "usagePerMonth": 2400,
+    "complexity": "High",
+    "variables": [
+      { "name": "GL Account (0GL_ACCOUNT)", "type": "Characteristic Variable", "mandatory": true  },
+      { "name": "Posting Period",           "type": "Date Range Variable",      "mandatory": true  }
+    ],
+    "calculatedKFs": [
+      { "name": "Balance",  "formula": "Debit - Credit", "bdcEquivalent": "Auto-mapped" }
+    ],
+    "keyFigures": ["Debit Amount","Credit Amount","Balance"],
+    "risks": [],
+    "fsdDraft": null
+  },
+  {
+    "id": "ZBEX_MARGIN_01",
+    "name": "Profit Margin Report",
+    "infoProvider": "0PROFIT_CTR_01A",
+    "usagePerMonth": 1100,
+    "complexity": "Medium",
+    "variables": [
+      { "name": "Profit Center", "type": "Characteristic Variable", "mandatory": true }
+    ],
+    "calculatedKFs": [
+      { "name": "Net Margin %", "formula": "NI / Revenue * 100", "bdcEquivalent": "Auto-mapped" }
+    ],
+    "keyFigures": ["Net Income","Revenue","Net Margin %"],
+    "risks": [],
+    "fsdDraft": null
+  }
+]

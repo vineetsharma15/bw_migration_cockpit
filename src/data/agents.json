@@ -1,0 +1,26 @@
+{
+  "summary": {
+    "activeAgents": 7,
+    "toolCalls24h": 1842,
+    "errors24h": 3,
+    "avgResponseTimeSec": 2.4
+  },
+  "registry": [
+    { "id": "bw-analysis",        "name": "BW Analysis Agent",             "description": "Inventory scan · Dependency analysis · Readiness scoring",   "status": "Running",    "callsToday": 342,  "promptVersion": "v2.1.4", "lastUpdated": "2026-06-10" },
+    { "id": "rationalization",    "name": "Rationalization Agent",          "description": "Classify migrate / retire / consolidate / redesign",          "status": "Running",    "callsToday": 88,   "promptVersion": "v1.8.2", "lastUpdated": "2026-06-05" },
+    { "id": "extractor-modern",   "name": "Extractor Modernization Agent",  "description": "Convert extractor logic to CDS view proposals",              "status": "Processing", "callsToday": 12,   "promptVersion": "v1.2.0", "lastUpdated": "2026-05-28" },
+    { "id": "query-doc",          "name": "BW Query Documentation Agent",   "description": "Generate FSD, TSD, test cases from BEx queries",             "status": "Running",    "callsToday": 24,   "promptVersion": "v2.0.1", "lastUpdated": "2026-06-12" },
+    { "id": "infoprovider-map",   "name": "InfoProvider Mapping Agent",     "description": "Map BW objects into data products",                          "status": "Running",    "callsToday": 8,    "promptVersion": "v1.4.1", "lastUpdated": "2026-06-08" },
+    { "id": "data-quality",       "name": "Data Quality Agent",             "description": "Profile data · Recommend remediation",                       "status": "Running",    "callsToday": 198,  "promptVersion": "v3.1.0", "lastUpdated": "2026-06-15" },
+    { "id": "consumption-copilot","name": "Consumption Copilot Agent",      "description": "NL Q&A · Insight generation · Persona workspace",            "status": "Running",    "callsToday": 1108, "promptVersion": "v3.0.1", "lastUpdated": "2026-06-17" },
+    { "id": "action-agent",       "name": "Autonomous Action Agent",        "description": "Create tickets · Trigger workflows · Notify owners",         "status": "Error",      "callsToday": 70,   "promptVersion": "v1.5.0", "lastUpdated": "2026-05-28" }
+  ],
+  "recentToolCalls": [
+    { "time": "09:48:32", "agent": "BW Analysis",        "tool": "scan_bw_system()",                    "status": "OK"    },
+    { "time": "09:47:11", "agent": "Consumption Copilot","tool": "query_data_product(FIN_CORE)",         "status": "OK"    },
+    { "time": "09:45:58", "agent": "Action Agent",        "tool": "create_jira_ticket()",               "status": "Error" },
+    { "time": "09:44:22", "agent": "DQ Agent",            "tool": "run_dq_rules(FIN_CORE_DP)",          "status": "OK"    },
+    { "time": "09:43:10", "agent": "Rationalization",     "tool": "classify_objects(batch=34)",          "status": "OK"    }
+  ],
+  "errorLog": "09:45:58 ERROR [Action Agent]\ncreate_jira_ticket() FAILED\nJiraError: 401 Unauthorized\nToken expired — re-auth required\nTool: jira_create_issue\nPayload: {\"project\":\"MIGR-2026\", \"summary\":\"ZFI_CUSTOM_03 blocker\", \"type\":\"Story\"}\n→ Retrying with refreshed token at 09:55\n\n09:12:03 WARN [Consumption Agent]\nData product FIN_CORE_DP confidence degraded: 91% → 87%\nReason: DQ score below 80% threshold"
+}

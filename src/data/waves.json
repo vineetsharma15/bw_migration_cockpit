@@ -1,0 +1,71 @@
+[
+  {
+    "id": "W1",
+    "name": "Wave 1 — Finance Core",
+    "domain": "Finance",
+    "status": "In Progress",
+    "progress": 62,
+    "totalObjects": 252,
+    "doneObjects": 156,
+    "targetDate": "2026-07-15",
+    "owner": "Ravi K.",
+    "qualityGate": "Pass",
+    "openIssues": 7,
+    "blockers": 2,
+    "objects": [
+      { "id": "0FI_GL_4",      "type": "ADSO",        "owner": "Ravi K.",  "status": "Done"        },
+      { "id": "0FI_AP_4",      "type": "ADSO",        "owner": "Ravi K.",  "status": "Done"        },
+      { "id": "0PROFIT_CTR_01A","type": "CompProv",   "owner": "Ana S.",   "status": "In Progress" },
+      { "id": "ZFI_CUSTOM_03", "type": "ADSO",        "owner": "Ravi K.",  "status": "Blocked",    "issue": "Dependency issue" }
+    ]
+  },
+  {
+    "id": "W2",
+    "name": "Wave 2 — Sales & Distribution",
+    "domain": "Sales",
+    "status": "Planned",
+    "progress": 12,
+    "totalObjects": 246,
+    "doneObjects": 0,
+    "targetDate": "2026-08-30",
+    "owner": "Priya M.",
+    "qualityGate": "Pending",
+    "openIssues": 0,
+    "blockers": 0,
+    "objects": [
+      { "id": "ZSD_BILLING_A", "type": "ADSO",    "owner": "Priya M.", "status": "Pending"    },
+      { "id": "0SD_C03",       "type": "BEx Query","owner": "Priya M.", "status": "Pending"    },
+      { "id": "2LIS_02_ITM",   "type": "Extractor","owner": "Basis",    "status": "Converting" }
+    ]
+  },
+  {
+    "id": "W3",
+    "name": "Wave 3 — Supply Chain",
+    "domain": "Supply Chain",
+    "status": "Not Started",
+    "progress": 0,
+    "totalObjects": 388,
+    "doneObjects": 0,
+    "targetDate": "2026-10-15",
+    "owner": "TBD",
+    "qualityGate": "Not Started",
+    "openIssues": 0,
+    "blockers": 0,
+    "objects": []
+  },
+  {
+    "id": "W4",
+    "name": "Wave 4 — HR & Payroll",
+    "domain": "HR",
+    "status": "Not Started",
+    "progress": 0,
+    "totalObjects": 204,
+    "doneObjects": 0,
+    "targetDate": "2026-12-01",
+    "owner": "TBD",
+    "qualityGate": "Not Started",
+    "openIssues": 0,
+    "blockers": 0,
+    "objects": []
+  }
+]

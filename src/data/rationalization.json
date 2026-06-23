@@ -1,0 +1,17 @@
+{
+  "summary": {
+    "migrate":     { "count": 1930, "pct": 68 },
+    "retire":      { "count": 497,  "pct": 17 },
+    "consolidate": { "count": 308,  "pct": 11 },
+    "pending":     { "count": 112,  "pct": 4  }
+  },
+  "objects": [
+    { "id": "0FI_GL_4",        "type": "ADSO",        "usagePerMonth": 4820, "complexity": "High",      "aiDecision": "Migrate",  "aiConfidence": 95, "decision": "Migrate",  "approved": true  },
+    { "id": "ZRPT_FI_OLD_01",  "type": "BEx Query",   "usagePerMonth": 3,    "complexity": "Low",       "aiDecision": "Retire",   "aiConfidence": 98, "decision": "Retire",   "approved": true  },
+    { "id": "ZSD_BILLING_A",   "type": "ADSO",        "usagePerMonth": 2140, "complexity": "Very High", "aiDecision": "Redesign", "aiConfidence": 82, "decision": "Redesign", "approved": false },
+    { "id": "0SD_C03",         "type": "BEx Query",   "usagePerMonth": 8900, "complexity": "Very High", "aiDecision": "Migrate",  "aiConfidence": 90, "decision": "Migrate",  "approved": false },
+    { "id": "ZHR_HEADCOUNT",   "type": "ADSO",        "usagePerMonth": 88,   "complexity": "Low",       "aiDecision": "Defer",    "aiConfidence": 75, "decision": "Defer",    "approved": false },
+    { "id": "0PROFIT_CTR_01A", "type": "CompProv",    "usagePerMonth": 3200, "complexity": "High",      "aiDecision": "Migrate",  "aiConfidence": 91, "decision": "Migrate",  "approved": false },
+    { "id": "0FI_AP_4",        "type": "ADSO",        "usagePerMonth": 1940, "complexity": "Medium",    "aiDecision": "Migrate",  "aiConfidence": 94, "decision": "Migrate",  "approved": true  }
+  ]
+}

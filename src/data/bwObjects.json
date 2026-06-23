@@ -1,0 +1,14 @@
+[
+  { "id": "0FI_GL_4",        "type": "ADSO",              "package": "FI_GENERAL",  "owner": "Ravi K.",   "lastUsed": "2026-06-17", "usagePerMonth": 4820, "complexity": "High",      "decision": "Migrate",  "rows": "348K", "sizeMB": 2100 },
+  { "id": "ZSD_BILLING_A",   "type": "ADSO",              "package": "ZSD_CUSTOM",  "owner": "Priya M.",  "lastUsed": "2026-06-15", "usagePerMonth": 2140, "complexity": "Very High", "decision": "Redesign", "rows": "1.2M", "sizeMB": 8400 },
+  { "id": "0SD_C03",         "type": "BEx Query",         "package": "SD_REPORTS",  "owner": "Team",      "lastUsed": "2026-06-18", "usagePerMonth": 8900, "complexity": "Very High", "decision": "Migrate",  "rows": null,   "sizeMB": null },
+  { "id": "2LIS_02_ITM",     "type": "Extractor",         "package": "LIS_SD",      "owner": "Basis",     "lastUsed": "2026-06-18", "usagePerMonth": null, "complexity": "High",      "decision": "Convert",  "rows": null,   "sizeMB": null },
+  { "id": "ZHR_HEADCOUNT",   "type": "ADSO",              "package": "ZHR_CUSTOM",  "owner": "Ana S.",    "lastUsed": "2026-03-02", "usagePerMonth": 88,   "complexity": "Low",       "decision": "Defer",    "rows": "88K",  "sizeMB": 210  },
+  { "id": "0PROFIT_CTR_01A", "type": "CompositeProvider", "package": "CO_PROFIT",   "owner": "Ravi K.",   "lastUsed": "2026-06-16", "usagePerMonth": 3200, "complexity": "High",      "decision": "Migrate",  "rows": null,   "sizeMB": null },
+  { "id": "0FI_AP_4",        "type": "ADSO",              "package": "FI_GENERAL",  "owner": "Ravi K.",   "lastUsed": "2026-06-17", "usagePerMonth": 1940, "complexity": "Medium",    "decision": "Migrate",  "rows": "210K", "sizeMB": 1400 },
+  { "id": "ZRPT_FI_OLD_01",  "type": "BEx Query",         "package": "ZFI_LEGACY",  "owner": "Team",      "lastUsed": "2025-01-10", "usagePerMonth": 3,    "complexity": "Low",       "decision": "Retire",   "rows": null,   "sizeMB": null },
+  { "id": "2LIS_11_VAHDR",   "type": "Extractor",         "package": "LIS_SD",      "owner": "Basis",     "lastUsed": "2026-06-18", "usagePerMonth": null, "complexity": "Medium",    "decision": "Convert",  "rows": null,   "sizeMB": null },
+  { "id": "2LIS_04_P_ARBPL", "type": "Extractor",         "package": "LIS_PP",      "owner": "Basis",     "lastUsed": "2026-06-17", "usagePerMonth": null, "complexity": "High",      "decision": "Pending",  "rows": null,   "sizeMB": null },
+  { "id": "ZFI_CUSTOM_03",   "type": "ADSO",              "package": "ZFI_CUSTOM",  "owner": "Ravi K.",   "lastUsed": "2026-06-14", "usagePerMonth": 620,  "complexity": "High",      "decision": "Migrate",  "rows": "90K",  "sizeMB": 480  },
+  { "id": "ZFI_RISK_01",     "type": "BEx Query",         "package": "ZFI_RISK",    "owner": "Ana S.",    "lastUsed": "2026-06-15", "usagePerMonth": 320,  "complexity": "High",      "decision": "Redesign", "rows": null,   "sizeMB": null }
+]

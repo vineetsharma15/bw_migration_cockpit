@@ -1,0 +1,67 @@
+[
+  {
+    "id": "2LIS_02_ITM",
+    "name": "Sales Order Items",
+    "type": "LIS",
+    "sourceTables": ["VBAP", "VBAK"],
+    "status": "Selected",
+    "complexity": "High",
+    "deltaMode": "Full + Delta via ERDAT",
+    "abapLogic": "SELECT vbap~vbeln, vbap~posnr, vbap~matnr, vbap~kwmeng, vbap~netwr, vbap~waerk, vbak~vkorg, vbak~erdat\n  FROM vbap INNER JOIN vbak ON vbak~vbeln = vbap~vbeln\n  WHERE vbap~mandt = sy-mandt\n    AND vbak~erdat BETWEEN p_datum1 AND p_datum2\n    AND vbap~abgru = space.",
+    "generatedCDS": "@AbapCatalog.sqlViewName: 'ZV_SD_ORDER_ITM'\n@Analytics.dataCategory: #CUBE\n@Analytics.dataExtraction.enabled: true\n@Analytics.dataExtraction.delta.changeDataCapture.automatic: true\n@VDM.viewType: #BASIC\ndefine view Z_SD_SalesOrderItems\n  as select from vbap\n  inner join vbak on vbak.vbeln = vbap.vbeln\n{\n  vbap.vbeln  as SalesOrder,\n  vbap.posnr  as SalesOrderItem,\n  vbap.matnr  as Material,\n  vbap.kwmeng as OrderQuantity,\n  vbap.netwr  as NetValue,\n  vbap.waerk  as Currency,\n  vbak.vkorg  as SalesOrganization,\n  vbak.erdat  as CreationDate\n}",
+    "fieldMapping": [
+      { "source": "vbap-vbeln", "target": "SalesOrder",       "status": "Auto" },
+      { "source": "vbap-posnr", "target": "SalesOrderItem",   "status": "Auto" },
+      { "source": "vbap-matnr", "target": "Material",         "status": "Auto" },
+      { "source": "vbap-kwmeng","target": "OrderQuantity",    "status": "Auto" },
+      { "source": "vbap-netwr", "target": "NetValue",         "status": "Auto" },
+      { "source": "vbap-waerk", "target": "Currency",         "status": "Auto" },
+      { "source": "vbak-vkorg", "target": "SalesOrganization","status": "Auto" },
+      { "source": "vbak-erdat", "target": "CreationDate",     "status": "Auto" },
+      { "source": "ZFLD_LEGACY","target": null,               "status": "Manual" }
+    ],
+    "aiInsights": [
+      { "icon": "✅", "text": "Field mapping: 8/9 fields auto-mapped. ZFLD_LEGACY has no S/4 equivalent — manual mapping required.", "confidence": 91 },
+      { "icon": "⚡", "text": "Delta handling: Use CDSView @Analytics.dataCategory with delta key on ERDAT+AEDAT.", "confidence": 89 }
+    ]
+  },
+  {
+    "id": "2LIS_11_VAHDR",
+    "name": "Sales Order Headers",
+    "type": "LIS",
+    "sourceTables": ["VBAK"],
+    "status": "Converted",
+    "complexity": "Medium",
+    "deltaMode": "Delta via AEDAT",
+    "abapLogic": "",
+    "generatedCDS": "",
+    "fieldMapping": [],
+    "aiInsights": []
+  },
+  {
+    "id": "2LIS_04_P_ARBPL",
+    "name": "Production Work Centers",
+    "type": "LIS",
+    "sourceTables": ["AFKO", "AFPO"],
+    "status": "Pending",
+    "complexity": "High",
+    "deltaMode": "TBD",
+    "abapLogic": "",
+    "generatedCDS": "",
+    "fieldMapping": [],
+    "aiInsights": []
+  },
+  {
+    "id": "ZBEX_CUST_EXTR",
+    "name": "Custom Customer Extractor",
+    "type": "Custom FM",
+    "sourceTables": ["ZCUST_TAB"],
+    "status": "Complex",
+    "complexity": "Very High",
+    "deltaMode": "Custom",
+    "abapLogic": "",
+    "generatedCDS": "",
+    "fieldMapping": [],
+    "aiInsights": []
+  }
+]

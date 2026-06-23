@@ -1,0 +1,22 @@
+{
+  "summary": {
+    "pendingApproval": 5,
+    "approvedToday": 12,
+    "executedThisWeek": 34,
+    "successRate": 97
+  },
+  "queue": [
+    { "id": "ACT-001", "title": "Restructure PC_FI_DELTA schedule",           "triggeredBy": "Data Quality Agent",       "type": "Config Change",   "risk": "Medium", "details": "Split delta (2h) from aggregation (nightly) to fix 6h data lag.",                             "status": "Pending" },
+    { "id": "ACT-002", "title": "Retire 62 unused ADSOs",                     "triggeredBy": "Rationalization Agent",    "type": "Destructive",     "risk": "High",   "details": "Deactivate 62 ADSOs with 0 usage in 12 months from PRD-BW-01.",                             "status": "Pending" },
+    { "id": "ACT-003", "title": "Create Jira ticket: ZFI_CUSTOM_03 blocker",  "triggeredBy": "Migration Planning Agent", "type": "Ticket Creation", "risk": "Low",    "details": "Open JIRA story in MIGR-2026 project for dependency resolution.",                          "status": "Pending" },
+    { "id": "ACT-004", "title": "Notify Priya M. — Wave 2 readiness review",  "triggeredBy": "Migration Planning Agent", "type": "Notification",    "risk": "Low",    "details": "Send Teams message to SD lead re: Wave 2 scope finalization.",                             "status": "Pending" },
+    { "id": "ACT-005", "title": "Add KUNNR referential integrity DQ rule",     "triggeredBy": "Data Quality Agent",       "type": "Rule Update",     "risk": "Low",    "details": "Register new DQ rule for Finance Core DP in DQ Engine.",                                  "status": "Pending" }
+  ],
+  "auditLog": [
+    { "timestamp": "2026-06-18T09:15:00Z", "action": "Retire 14 BEx Queries (0 usage)",            "approvedBy": "Ravi K.",     "status": "Executed", "result": "14 objects deactivated in PRD"          },
+    { "timestamp": "2026-06-17T16:30:00Z", "action": "Create JIRA MIGR-2451: SD Extractor gap",    "approvedBy": "Priya M.",    "status": "Executed", "result": "Ticket created · Assigned to Basis"     },
+    { "timestamp": "2026-06-17T11:00:00Z", "action": "Update Wave 1 owner — ZFI_AP object group",  "approvedBy": "Ana S.",      "status": "Executed", "result": "Owner updated to Ravi K."               },
+    { "timestamp": "2026-06-16T14:45:00Z", "action": "Send DQ alert notification to FI team",      "approvedBy": "Auto-approved","status": "Executed","result": "Teams message sent to 4 recipients"     },
+    { "timestamp": "2026-06-16T09:00:00Z", "action": "Retire 8 legacy DSOs (deprecated)",          "approvedBy": "Ravi K.",     "status": "Failed",   "result": "Lock conflict — retrying at 06:00"      }
+  ]
+}

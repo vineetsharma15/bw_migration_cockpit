@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAP BW → BDC Migration Cockpit</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: '72', 'SAP-icons', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f5f7; color: #32363a; font-size: 13px; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+  /* ── TOP BAR ── */
+  .topbar { background: #fff; border-bottom: 1px solid #d9d9d9; height: 48px; display: flex; align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,.06); }
+  .topbar-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; color: #0070f2; white-space: nowrap; }
+  .topbar-logo span.sub { font-weight: 400; color: #89919a; font-size: 12px; }
+  .topbar-badge { background: #0070f2; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 600; }
+  .topbar-search { flex: 1; max-width: 400px; margin-left: 24px; }
+  .topbar-search input { width: 100%; border: 1px solid #d9d9d9; border-radius: 4px; padding: 6px 12px; font-size: 13px; background: #f4f5f7; outline: none; }
+  .topbar-search input:focus { border-color: #0070f2; background: #fff; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+  .env-badge { background: #f0f4ff; border: 1px solid #b3caf5; color: #0057a8; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; cursor: pointer; }
+  .icon-btn { width: 32px; height: 32px; border-radius: 50%; background: #f4f5f7; border: 1px solid #d9d9d9; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; position: relative; }
+  .notif-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: #e9730c; border-radius: 50%; border: 2px solid #fff; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: #0070f2; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .copilot-btn { display: flex; align-items: center; gap: 6px; background: linear-gradient(135deg,#0070f2,#6200ea); color: #fff; border: none; padding: 6px 14px; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+  /* ── BODY LAYOUT ── */
+  .app-body { display: flex; flex: 1; overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width: 220px; background: #1a2233; color: #c0cad8; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #2e3f5c; border-radius: 2px; }
+  .nav-section { padding: 12px 0 4px; }
+  .nav-section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #5a6d85; padding: 4px 16px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 16px; cursor: pointer; border-left: 3px solid transparent; transition: all .15s; font-size: 12.5px; }
+  .nav-item:hover { background: #253047; color: #e0e8f5; }
+  .nav-item.active { background: #162a4a; color: #4db3ff; border-left-color: #0070f2; font-weight: 600; }
+  .nav-item .icon { font-size: 15px; width: 18px; text-align: center; }
+  .nav-badge { margin-left: auto; background: #e9730c; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 8px; font-weight: 700; }
+  .nav-badge.green { background: #2b7a0b; }
+  .nav-badge.blue { background: #0057a8; }
+
+  /* ── MAIN CANVAS ── */
+  .canvas { flex: 1; overflow-y: auto; padding: 20px 24px; }
+  .canvas::-webkit-scrollbar { width: 6px; }
+  .canvas::-webkit-scrollbar-thumb { background: #c8d0db; border-radius: 3px; }
+
+  /* ── PAGE HEADER ── */
+  .page-header { margin-bottom: 18px; }
+  .page-header h1 { font-size: 20px; font-weight: 700; color: #1a2233; }
+  .page-header .sub { font-size: 12px; color: #89919a; margin-top: 2px; }
+  .page-header-row { display: flex; align-items: flex-end; justify-content: space-between; }
+  .breadcrumb { font-size: 11px; color: #89919a; margin-bottom: 4px; }
+  .breadcrumb span { color: #0070f2; cursor: pointer; }
+
+  /* ── CARDS ── */
+  .card { background: #fff; border: 1px solid #e4e7ec; border-radius: 8px; padding: 16px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .card-title { font-size: 13px; font-weight: 700; color: #1a2233; }
+  .card-sub { font-size: 11px; color: #89919a; }
+
+  /* ── GRIDS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .grid-split { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+  .grid-split-rev { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
+  .col-span-2 { grid-column: span 2; }
+  .col-span-3 { grid-column: span 3; }
+
+  /* ── KPI CARDS ── */
+  .kpi { background: #fff; border: 1px solid #e4e7ec; border-radius: 8px; padding: 16px; }
+  .kpi-label { font-size: 11px; color: #89919a; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+  .kpi-value { font-size: 28px; font-weight: 700; color: #1a2233; line-height: 1; }
+  .kpi-sub { font-size: 11px; color: #89919a; margin-top: 4px; }
+  .kpi-trend { font-size: 11px; margin-top: 6px; font-weight: 600; }
+  .kpi-trend.up { color: #2b7a0b; }
+  .kpi-trend.down { color: #bb0000; }
+  .kpi-trend.warn { color: #e9730c; }
+  .kpi-bar { height: 4px; background: #e4e7ec; border-radius: 2px; margin-top: 10px; overflow: hidden; }
+  .kpi-bar-fill { height: 100%; border-radius: 2px; background: #0070f2; }
+  .kpi-bar-fill.green { background: #2b7a0b; }
+  .kpi-bar-fill.orange { background: #e9730c; }
+  .kpi-bar-fill.red { background: #bb0000; }
+
+  /* ── STATUS BADGES ── */
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge-blue { background: #e8f2ff; color: #0057a8; }
+  .badge-green { background: #e8f5e2; color: #1a6100; }
+  .badge-orange { background: #fff0e0; color: #b85c00; }
+  .badge-red { background: #ffeeee; color: #aa0000; }
+  .badge-gray { background: #f2f4f7; color: #5a6d85; }
+  .badge-purple { background: #f3eeff; color: #5a00c8; }
+
+  /* ── TABLES ── */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th { text-align: left; font-size: 11px; font-weight: 700; color: #89919a; text-transform: uppercase; letter-spacing: .04em; padding: 8px 12px; border-bottom: 2px solid #e4e7ec; white-space: nowrap; }
+  .data-table td { padding: 10px 12px; border-bottom: 1px solid #f0f2f5; font-size: 12.5px; vertical-align: middle; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: #f8f9fb; }
+  .data-table td.mono { font-family: 'Consolas','Monaco',monospace; font-size: 11.5px; color: #444; }
+
+  /* ── BUTTONS ── */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 4px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; }
+  .btn-primary { background: #0070f2; color: #fff; }
+  .btn-primary:hover { background: #0057c2; }
+  .btn-ghost { background: transparent; color: #0070f2; border: 1px solid #0070f2; }
+  .btn-ghost:hover { background: #e8f2ff; }
+  .btn-danger { background: #bb0000; color: #fff; }
+  .btn-success { background: #2b7a0b; color: #fff; }
+  .btn-sm { padding: 4px 10px; font-size: 11.5px; }
+  .btn-group { display: flex; gap: 8px; }
+
+  /* ── PROGRESS ── */
+  .progress-bar { height: 8px; background: #e4e7ec; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; background: #0070f2; }
+  .progress-fill.green { background: #2b7a0b; }
+  .progress-fill.orange { background: #e9730c; }
+  .progress-fill.red { background: #bb0000; }
+
+  /* ── AI PANEL ── */
+  .ai-panel { background: linear-gradient(135deg,#eaf2ff 0%,#f3eeff 100%); border: 1px solid #c3d9ff; border-radius: 8px; padding: 14px 16px; }
+  .ai-panel-header { display: flex; align-items: center; gap: 8px; font-weight: 700; color: #0057a8; font-size: 12.5px; margin-bottom: 10px; }
+  .ai-label { font-size: 10px; font-weight: 700; background: #0070f2; color: #fff; padding: 2px 6px; border-radius: 4px; letter-spacing: .04em; }
+  .ai-rec { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-top: 1px solid #d4e4ff; }
+  .ai-rec:first-of-type { border-top: none; padding-top: 0; }
+  .ai-rec-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+  .ai-rec-text { font-size: 12px; color: #1a2233; line-height: 1.5; }
+  .ai-rec-text strong { color: #0057a8; }
+  .conf-pill { font-size: 10px; background: #e8f5e2; color: #1a6100; padding: 2px 6px; border-radius: 8px; font-weight: 700; margin-left: 6px; }
+
+  /* ── GRAPH CANVAS (SVG placeholder) ── */
+  .graph-canvas { background: #f9fafb; border: 1px dashed #c8d0db; border-radius: 8px; min-height: 300px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .graph-canvas svg { width: 100%; height: 300px; }
+
+  /* ── CHAT ── */
+  .chat-container { display: flex; flex-direction: column; height: 480px; }
+  .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 12px; background: #f8f9fb; border: 1px solid #e4e7ec; border-radius: 8px 8px 0 0; }
+  .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 12.5px; line-height: 1.55; }
+  .chat-bubble.user { background: #0070f2; color: #fff; align-self: flex-end; border-radius: 12px 12px 2px 12px; }
+  .chat-bubble.agent { background: #fff; border: 1px solid #e4e7ec; align-self: flex-start; border-radius: 2px 12px 12px 12px; }
+  .agent-meta { font-size: 10px; color: #89919a; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+  .chat-input-row { display: flex; gap: 8px; padding: 10px 12px; background: #fff; border: 1px solid #e4e7ec; border-top: none; border-radius: 0 0 8px 8px; }
+  .chat-input-row input { flex: 1; border: 1px solid #d9d9d9; border-radius: 4px; padding: 8px 12px; font-size: 13px; outline: none; }
+  .chat-input-row input:focus { border-color: #0070f2; }
+
+  /* ── CODE BLOCK ── */
+  .code-block { background: #1a2233; color: #c9d1d9; border-radius: 6px; padding: 14px 16px; font-family: 'Consolas','Monaco',monospace; font-size: 12px; line-height: 1.6; overflow-x: auto; }
+  .code-block .kw { color: #79b8ff; }
+  .code-block .str { color: #9ecbff; }
+  .code-block .cmt { color: #6a737d; }
+  .code-block .ann { color: #b392f0; }
+  .code-block .typ { color: #85e89d; }
+
+  /* ── MISC ── */
+  .section-divider { height: 1px; background: #e4e7ec; margin: 16px 0; }
+  .tag { display: inline-block; background: #f0f4ff; color: #0057a8; border: 1px solid #c3d9ff; border-radius: 4px; padding: 2px 8px; font-size: 11px; margin: 2px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .dot-green { background: #2b7a0b; }
+  .dot-orange { background: #e9730c; }
+  .dot-red { background: #bb0000; }
+  .dot-blue { background: #0070f2; }
+  .dot-gray { background: #89919a; }
+  .flex { display: flex; }
+  .flex-center { display: flex; align-items: center; }
+  .flex-between { display: flex; align-items: center; justify-content: space-between; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .mt-4 { margin-top: 4px; }
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .mb-12 { margin-bottom: 12px; }
+  .text-muted { color: #89919a; font-size: 11.5px; }
+  .text-sm { font-size: 11.5px; }
+  .font-bold { font-weight: 700; }
+  .approval-banner { background: #fff8e0; border: 1px solid #f5cc00; border-radius: 6px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 12.5px; }
+
+  /* ── SCREEN VISIBILITY ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── WAVE BOARD ── */
+  .wave-col { background: #f4f5f7; border-radius: 8px; padding: 12px; min-height: 280px; }
+  .wave-col-header { font-size: 12px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+  .wave-card { background: #fff; border: 1px solid #e4e7ec; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; font-size: 12px; cursor: pointer; }
+  .wave-card:hover { border-color: #0070f2; box-shadow: 0 2px 6px rgba(0,112,242,.1); }
+
+  /* ── LINEAGE GRAPH SVG ── */
+  .lineage-node { fill: #fff; stroke: #0070f2; stroke-width: 1.5; rx: 6; }
+  .lineage-node-text { font-size: 11px; fill: #1a2233; font-weight: 600; }
+  .lineage-edge { stroke: #c3d9ff; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+
+  /* ── DONUT CHART ── */
+  .donut { position: relative; width: 120px; height: 120px; }
+  .donut svg { width: 120px; height: 120px; transform: rotate(-90deg); }
+  .donut-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+  .donut-label .val { font-size: 22px; font-weight: 700; color: #1a2233; }
+  .donut-label .sub { font-size: 10px; color: #89919a; }
+
+  select, input[type=range] { font-size: 12.5px; border: 1px solid #d9d9d9; border-radius: 4px; padding: 5px 8px; background: #fff; outline: none; cursor: pointer; }
+  select:focus { border-color: #0070f2; }
+  input[type=range] { padding: 0; border: none; width: 100%; accent-color: #0070f2; }
+
+  .field-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f2f5; }
+  .field-row:last-child { border-bottom: none; }
+  .field-name { font-family: monospace; font-size: 12px; color: #444; flex: 1; }
+  .field-arrow { color: #0070f2; font-size: 16px; }
+  .field-target { font-family: monospace; font-size: 12px; color: #0057a8; flex: 1; }
+
+  .agent-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #e4e7ec; border-radius: 6px; margin-bottom: 8px; background: #fff; }
+  .agent-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .agent-dot.running { background: #2b7a0b; box-shadow: 0 0 0 3px rgba(43,122,11,.2); }
+  .agent-dot.idle { background: #89919a; }
+  .agent-dot.error { background: #bb0000; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <span>🔷</span>
+    <span>Migration Cockpit</span>
+    <span class="sub">BW / HANA → BDC</span>
+    <span class="topbar-badge">PROTOTYPE</span>
+  </div>
+  <div class="topbar-search">
+    <input type="text" placeholder="🔍  Search objects, queries, agents...">
+  </div>
+  <div class="topbar-right">
+    <span class="env-badge">PRD-BW-01  ▾</span>
+    <button class="copilot-btn">✦ Copilot</button>
+    <div class="icon-btn">🔔<span class="notif-dot"></span></div>
+    <div class="icon-btn">⚙</div>
+    <div class="avatar">VS</div>
+  </div>
+</div>
+
+<!-- APP BODY -->
+<div class="app-body">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="nav-section">
+    <div class="nav-item active" onclick="show('s01')"><span class="icon">🏠</span> Command Center</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Assess &amp; Plan</div>
+    <div class="nav-item" onclick="show('s02')"><span class="icon">🔍</span> BW Discovery</div>
+    <div class="nav-item" onclick="show('s03')"><span class="icon">🕸</span> Dependency Explorer</div>
+    <div class="nav-item" onclick="show('s04')"><span class="icon">⚖</span> Rationalization <span class="nav-badge">12</span></div>
+    <div class="nav-item" onclick="show('s05')"><span class="icon">💰</span> TCO Calculator</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Migration Factory</div>
+    <div class="nav-item" onclick="show('s06')"><span class="icon">☁</span> BW to BW PCE</div>
+    <div class="nav-item" onclick="show('s07')"><span class="icon">📅</span> Wave Planner</div>
+    <div class="nav-item" onclick="show('s08')"><span class="icon">🔄</span> Extractor → CDS</div>
+    <div class="nav-item" onclick="show('s09')"><span class="icon">📋</span> Query Analyzer</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Data Product Studio</div>
+    <div class="nav-item" onclick="show('s10')"><span class="icon">🗺</span> InfoProvider Mapper</div>
+    <div class="nav-item" onclick="show('s11')"><span class="icon">🏭</span> Data Product Studio</div>
+    <div class="nav-item" onclick="show('s12')"><span class="icon">🧪</span> Data Quality</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">AI Consumption</div>
+    <div class="nav-item" onclick="show('s13')"><span class="icon">💬</span> AI Copilot</div>
+    <div class="nav-item" onclick="show('s14')"><span class="icon">👤</span> Persona Workspace</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Control</div>
+    <div class="nav-item" onclick="show('s15')"><span class="icon">⚡</span> Autonomous Actions <span class="nav-badge orange" style="background:#e9730c">5</span></div>
+    <div class="nav-item" onclick="show('s16')"><span class="icon">🤖</span> Agent Console</div>
+  </div>
+</nav>
+
+<!-- CANVAS -->
+<main class="canvas">
+
+<!-- ══════════════════════════════════════════════════════
+     S01 — MIGRATION COMMAND CENTER
+══════════════════════════════════════════════════════ -->
+<div id="s01" class="screen active">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb">Home</div>
+        <h1>Migration Command Center</h1>
+        <div class="sub">SAP BW (PRD-BW-01) → SAP Business Data Cloud · Landscape scan: Jun 18 2026 09:42</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost btn-sm">📤 Export Report</button>
+        <button class="btn btn-primary btn-sm">▶ Run Full Assessment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="grid-4 mb-12">
+    <div class="kpi">
+      <div class="kpi-label">Migration Readiness</div>
+      <div class="kpi-value" style="color:#0070f2">74<span style="font-size:16px">%</span></div>
+      <div class="kpi-bar mt-8"><div class="kpi-bar-fill" style="width:74%"></div></div>
+      <div class="kpi-trend up mt-4">↑ +6% vs last scan</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">BW Objects</div>
+      <div class="kpi-value">2,847</div>
+      <div class="kpi-sub">ADSOs · Queries · Extractors · PChs</div>
+      <div class="kpi-trend warn">⚠ 312 require decision</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Migration Waves</div>
+      <div class="kpi-value">4</div>
+      <div class="kpi-sub">Wave 1 in progress · 3 planned</div>
+      <div class="kpi-bar mt-8"><div class="kpi-bar-fill green" style="width:28%"></div></div>
+      <div class="kpi-trend up mt-4">28% complete</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Open Risks</div>
+      <div class="kpi-value" style="color:#bb0000">18</div>
+      <div class="kpi-sub">5 High · 9 Medium · 4 Low</div>
+      <div class="kpi-trend down">↑ 3 new since last week</div>
+    </div>
+  </div>
+
+  <div class="grid-split mb-12">
+    <!-- BW Object Inventory -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">BW Object Inventory</span>
+        <button class="btn btn-ghost btn-sm" onclick="show('s02')">View Discovery →</button>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Object Type</th><th>Total</th><th>Migrate</th><th>Retire</th><th>Pending</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>ADSO</td><td>348</td><td class="font-bold" style="color:#2b7a0b">241</td><td style="color:#bb0000">62</td><td style="color:#e9730c">45</td><td><span class="badge badge-green">On Track</span></td></tr>
+          <tr><td>CompositeProvider</td><td>124</td><td class="font-bold" style="color:#2b7a0b">88</td><td style="color:#bb0000">14</td><td style="color:#e9730c">22</td><td><span class="badge badge-orange">Partial</span></td></tr>
+          <tr><td>BEx Query</td><td>892</td><td class="font-bold" style="color:#2b7a0b">503</td><td style="color:#bb0000">201</td><td style="color:#e9730c">188</td><td><span class="badge badge-orange">In Review</span></td></tr>
+          <tr><td>Extractor (2LIS)</td><td>234</td><td class="font-bold" style="color:#2b7a0b">178</td><td style="color:#bb0000">12</td><td style="color:#e9730c">44</td><td><span class="badge badge-blue">Analyzing</span></td></tr>
+          <tr><td>Process Chain</td><td>156</td><td class="font-bold" style="color:#2b7a0b">98</td><td style="color:#bb0000">28</td><td style="color:#e9730c">30</td><td><span class="badge badge-green">On Track</span></td></tr>
+          <tr><td>InfoObject</td><td>1,093</td><td class="font-bold" style="color:#2b7a0b">820</td><td style="color:#bb0000">180</td><td style="color:#e9730c">93</td><td><span class="badge badge-green">On Track</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- AI Recommendations -->
+    <div class="ai-panel">
+      <div class="ai-panel-header"><span class="ai-label">AI</span> Agent Recommendations</div>
+      <div class="ai-rec">
+        <span class="ai-rec-icon">🎯</span>
+        <div class="ai-rec-text"><strong>High Priority:</strong> 44 BEx Queries with >100 users/month should be migrated before Wave 2 cutover to avoid business disruption. <span class="conf-pill">92% conf</span></div>
+      </div>
+      <div class="ai-rec">
+        <span class="ai-rec-icon">⚡</span>
+        <div class="ai-rec-text"><strong>Quick Win:</strong> 62 ADSOs with zero usage in 12 months can be retired immediately, reducing migration scope by 18%. <span class="conf-pill">97% conf</span></div>
+      </div>
+      <div class="ai-rec">
+        <span class="ai-rec-icon">🔗</span>
+        <div class="ai-rec-text"><strong>Dependency Risk:</strong> Extractor 2LIS_02_ITM has 34 downstream ADSOs. Convert to CDS before Wave 1 migration to prevent chain failures. <span class="conf-pill">88% conf</span></div>
+      </div>
+      <div class="ai-rec">
+        <span class="ai-rec-icon">📊</span>
+        <div class="ai-rec-text"><strong>Data Product Opportunity:</strong> 12 Finance ADSOs share 78% of dimensions — consolidate into 2 BDC data products. <span class="conf-pill">85% conf</span></div>
+      </div>
+      <div class="mt-12 btn-group">
+        <button class="btn btn-primary btn-sm" onclick="show('s15')">Review Actions</button>
+        <button class="btn btn-ghost btn-sm">Dismiss All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wave Progress + Risk -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Migration Wave Progress</span><button class="btn btn-ghost btn-sm" onclick="show('s07')">Wave Planner →</button></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <div class="flex-between mb-4"><span class="text-sm font-bold">Wave 1 — Finance Core</span><span class="badge badge-blue">In Progress</span></div>
+          <div class="progress-bar"><div class="progress-fill green" style="width:62%"></div></div>
+          <div class="flex-between mt-4 text-muted"><span>62% · 156/252 objects</span><span>Target: Jul 15</span></div>
+        </div>
+        <div>
+          <div class="flex-between mb-4"><span class="text-sm font-bold">Wave 2 — Sales &amp; Distribution</span><span class="badge badge-orange">Planned</span></div>
+          <div class="progress-bar"><div class="progress-fill orange" style="width:12%"></div></div>
+          <div class="flex-between mt-4 text-muted"><span>12% · 30/246 objects (prep)</span><span>Target: Aug 30</span></div>
+        </div>
+        <div>
+          <div class="flex-between mb-4"><span class="text-sm font-bold">Wave 3 — Supply Chain</span><span class="badge badge-gray">Not Started</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+          <div class="flex-between mt-4 text-muted"><span>0% · 0/388 objects</span><span>Target: Oct 15</span></div>
+        </div>
+        <div>
+          <div class="flex-between mb-4"><span class="text-sm font-bold">Wave 4 — HR &amp; Payroll</span><span class="badge badge-gray">Not Started</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+          <div class="flex-between mt-4 text-muted"><span>0% · 0/204 objects</span><span>Target: Dec 1</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Top Risks</span><button class="btn btn-ghost btn-sm" onclick="show('s15')">Action Center →</button></div>
+      <table class="data-table">
+        <thead><tr><th>Risk</th><th>Severity</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr><td>SAP S/4HANA CDS view coverage gap for SD extractors</td><td><span class="badge badge-red">High</span></td><td>Ravi K.</td></tr>
+          <tr><td>BEx Query 0SD_C03 has circular dependency</td><td><span class="badge badge-red">High</span></td><td>Priya M.</td></tr>
+          <tr><td>12 legacy DSOs use obsolete transformations</td><td><span class="badge badge-orange">Med</span></td><td>Team</td></tr>
+          <tr><td>Data quality score below threshold in FI-AR</td><td><span class="badge badge-orange">Med</span></td><td>Ana S.</td></tr>
+          <tr><td>Wave 2 start date at risk due to resource gap</td><td><span class="badge badge-orange">Med</span></td><td>PM</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S02 — BW LANDSCAPE DISCOVERY
+══════════════════════════════════════════════════════ -->
+<div id="s02" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / Assess &amp; Plan</div>
+        <h1>BW Landscape Discovery</h1>
+        <div class="sub">Connect and scan BW system to inventory objects, data volumes and usage patterns</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost btn-sm">📤 Export Inventory</button>
+        <button class="btn btn-primary btn-sm">🔄 Rescan System</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Selector -->
+  <div class="card mb-12">
+    <div class="card-header"><span class="card-title">System Connection</span><span class="badge badge-green">● Connected</span></div>
+    <div class="grid-4" style="gap:12px;align-items:end">
+      <div><div class="text-muted mb-4">System ID</div><select><option>PRD-BW-01 (Production)</option><option>QAS-BW-01 (QA)</option><option>DEV-BW-01 (Dev)</option></select></div>
+      <div><div class="text-muted mb-4">Host</div><div class="font-bold text-sm">bw-prd.corp.example.com:3200</div></div>
+      <div><div class="text-muted mb-4">BW Release</div><div class="font-bold text-sm">SAP BW 7.5 SP22</div></div>
+      <div><div class="text-muted mb-4">DB Size</div><div class="font-bold text-sm">4.8 TB (HANA)</div></div>
+    </div>
+    <div class="mt-12">
+      <div class="text-muted mb-4" style="font-size:11px">Last Full Scan Progress</div>
+      <div class="progress-bar"><div class="progress-fill green" style="width:100%"></div></div>
+      <div class="text-muted mt-4">Completed Jun 18 2026 09:42 · Duration 14m 32s · 2,847 objects discovered</div>
+    </div>
+  </div>
+
+  <div class="grid-4 mb-12">
+    <div class="kpi"><div class="kpi-label">Total Objects</div><div class="kpi-value">2,847</div><div class="kpi-bar mt-8"><div class="kpi-bar-fill" style="width:100%"></div></div></div>
+    <div class="kpi"><div class="kpi-label">Active Objects</div><div class="kpi-value" style="color:#2b7a0b">2,214</div><div class="kpi-sub">used in last 12 months</div></div>
+    <div class="kpi"><div class="kpi-label">Inactive Objects</div><div class="kpi-value" style="color:#bb0000">633</div><div class="kpi-sub">retirement candidates</div></div>
+    <div class="kpi"><div class="kpi-label">Custom Code %</div><div class="kpi-value">34<span style="font-size:16px">%</span></div><div class="kpi-sub">964 objects with custom ABAP</div></div>
+  </div>
+
+  <!-- Inventory Grid -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Object Inventory</span>
+      <div class="flex gap-8">
+        <select><option>All Types</option><option>ADSO</option><option>BEx Query</option><option>Extractor</option><option>Process Chain</option></select>
+        <select><option>All Owners</option><option>FI Team</option><option>SD Team</option><option>HR Team</option></select>
+        <select><option>All Usage</option><option>Active (90d)</option><option>Inactive</option></select>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Object Name</th><th>Type</th><th>Package</th><th>Owner</th><th>Last Used</th><th>Usage/mo</th><th>Complexity</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">0FI_GL_4</td><td><span class="tag">ADSO</span></td><td>FI_GENERAL</td><td>Ravi K.</td><td>Jun 17 2026</td><td>4,820</td><td><span class="badge badge-orange">High</span></td><td><button class="btn btn-ghost btn-sm" onclick="show('s03')">Lineage</button></td></tr>
+        <tr><td class="mono">ZSD_BILLING_A</td><td><span class="tag">ADSO</span></td><td>ZSD_CUSTOM</td><td>Priya M.</td><td>Jun 15 2026</td><td>2,140</td><td><span class="badge badge-red">Very High</span></td><td><button class="btn btn-ghost btn-sm" onclick="show('s03')">Lineage</button></td></tr>
+        <tr><td class="mono">0SD_C03</td><td><span class="tag">BEx Query</span></td><td>SD_REPORTS</td><td>Team</td><td>Jun 18 2026</td><td>8,900</td><td><span class="badge badge-red">Very High</span></td><td><button class="btn btn-ghost btn-sm" onclick="show('s09')">Analyze</button></td></tr>
+        <tr><td class="mono">2LIS_02_ITM</td><td><span class="tag">Extractor</span></td><td>LIS_SD</td><td>Basis</td><td>Jun 18 2026</td><td>N/A</td><td><span class="badge badge-orange">High</span></td><td><button class="btn btn-ghost btn-sm" onclick="show('s08')">Convert</button></td></tr>
+        <tr><td class="mono">ZHR_HEADCOUNT</td><td><span class="tag">ADSO</span></td><td>ZHR_CUSTOM</td><td>Ana S.</td><td>Mar 02 2026</td><td>88</td><td><span class="badge badge-green">Low</span></td><td><button class="btn btn-ghost btn-sm" onclick="show('s04')">Rationalize</button></td></tr>
+        <tr><td class="mono">0PROFIT_CTR_01A</td><td><span class="tag">CompositeProvider</span></td><td>CO_PROFIT</td><td>Ravi K.</td><td>Jun 16 2026</td><td>3,200</td><td><span class="badge badge-orange">High</span></td><td><button class="btn btn-ghost btn-sm" onclick="show('s10')">Map → BDC</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S03 — DEPENDENCY & LINEAGE EXPLORER
+══════════════════════════════════════════════════════ -->
+<div id="s03" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / <span onclick="show('s02')">Discovery</span> / Dependency Explorer</div>
+        <h1>Dependency &amp; Lineage Explorer</h1>
+        <div class="sub">Visualize upstream/downstream dependencies across extractors, ADSOs, queries and reports</div>
+      </div>
+      <div class="btn-group">
+        <select><option>0FI_GL_4 (ADSO)</option><option>ZSD_BILLING_A</option><option>0SD_C03</option><option>2LIS_02_ITM</option></select>
+        <button class="btn btn-ghost btn-sm">🔍 Filter</button>
+        <button class="btn btn-primary btn-sm">📤 Export Graph</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-split-rev mb-12">
+    <!-- Graph Canvas -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">Lineage Graph — 0FI_GL_4</span><div class="flex gap-8"><span class="badge badge-blue">6 nodes</span><span class="badge badge-orange">2 risks</span></div></div>
+      <div class="graph-canvas">
+        <svg viewBox="0 0 700 300">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="#0070f2"/>
+            </marker>
+          </defs>
+          <!-- Edges -->
+          <line x1="130" y1="80" x2="250" y2="80" stroke="#c3d9ff" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="130" y1="220" x2="250" y2="150" stroke="#c3d9ff" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="340" y1="90" x2="440" y2="80" stroke="#c3d9ff" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="340" y1="150" x2="440" y2="150" stroke="#c3d9ff" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="530" y1="80" x2="610" y2="80" stroke="#c3d9ff" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="530" y1="150" x2="610" y2="150" stroke="#f5cc00" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrow)"/>
+          <!-- Nodes -->
+          <rect x="20" y="60" width="110" height="36" rx="6" fill="#e8f2ff" stroke="#0070f2" stroke-width="1.5"/>
+          <text x="75" y="74" text-anchor="middle" font-size="10" font-weight="700" fill="#0057a8">2LIS_02_SCL</text>
+          <text x="75" y="87" text-anchor="middle" font-size="9" fill="#89919a">Extractor</text>
+          <rect x="20" y="200" width="110" height="36" rx="6" fill="#e8f2ff" stroke="#0070f2" stroke-width="1.5"/>
+          <text x="75" y="214" text-anchor="middle" font-size="10" font-weight="700" fill="#0057a8">2LIS_04_P_ARBPL</text>
+          <text x="75" y="227" text-anchor="middle" font-size="9" fill="#89919a">Extractor</text>
+          <!-- 0FI_GL_4 (selected) -->
+          <rect x="250" y="110" width="90" height="60" rx="6" fill="#0070f2" stroke="#0057a8" stroke-width="2"/>
+          <text x="295" y="134" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">0FI_GL_4</text>
+          <text x="295" y="148" text-anchor="middle" font-size="9" fill="#c3d9ff">ADSO (Selected)</text>
+          <text x="295" y="162" text-anchor="middle" font-size="9" fill="#c3d9ff">348K rows</text>
+          <!-- Composites -->
+          <rect x="440" y="60" width="90" height="36" rx="6" fill="#f3eeff" stroke="#6200ea" stroke-width="1.5"/>
+          <text x="485" y="74" text-anchor="middle" font-size="10" font-weight="700" fill="#5a00c8">0PROFIT_CTR_01A</text>
+          <text x="485" y="87" text-anchor="middle" font-size="9" fill="#89919a">CompositeProvider</text>
+          <rect x="440" y="132" width="90" height="36" rx="6" fill="#fff8e0" stroke="#e9730c" stroke-width="1.5"/>
+          <text x="485" y="146" text-anchor="middle" font-size="10" font-weight="700" fill="#b85c00">ZFI_PROFIT_COMP</text>
+          <text x="485" y="159" text-anchor="middle" font-size="9" fill="#89919a">CompositeProvider ⚠</text>
+          <!-- Queries -->
+          <rect x="610" y="62" width="80" height="32" rx="6" fill="#e8f5e2" stroke="#2b7a0b" stroke-width="1.5"/>
+          <text x="650" y="75" text-anchor="middle" font-size="10" font-weight="700" fill="#1a6100">0FI_C04</text>
+          <text x="650" y="87" text-anchor="middle" font-size="9" fill="#89919a">BEx Query</text>
+          <rect x="610" y="134" width="80" height="32" rx="6" fill="#ffeeee" stroke="#bb0000" stroke-width="2"/>
+          <text x="650" y="147" text-anchor="middle" font-size="10" font-weight="700" fill="#aa0000">ZFI_RISK_01</text>
+          <text x="650" y="159" text-anchor="middle" font-size="9" fill="#89919a">BEx Query ⚠</text>
+          <!-- Legend -->
+          <rect x="20" y="265" width="12" height="12" rx="2" fill="#e8f2ff" stroke="#0070f2"/>
+          <text x="36" y="275" font-size="9" fill="#89919a">Extractor</text>
+          <rect x="100" y="265" width="12" height="12" rx="2" fill="#0070f2"/>
+          <text x="116" y="275" font-size="9" fill="#89919a">Selected ADSO</text>
+          <rect x="210" y="265" width="12" height="12" rx="2" fill="#f3eeff" stroke="#6200ea"/>
+          <text x="226" y="275" font-size="9" fill="#89919a">CompositeProvider</text>
+          <rect x="340" y="265" width="12" height="12" rx="2" fill="#e8f5e2" stroke="#2b7a0b"/>
+          <text x="356" y="275" font-size="9" fill="#89919a">BEx Query</text>
+          <line x1="440" y1="271" x2="460" y2="271" stroke="#f5cc00" stroke-width="2" stroke-dasharray="4"/>
+          <text x="465" y="275" font-size="9" fill="#89919a">Risk dependency</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Object Details -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card">
+        <div class="card-title mb-12">Object Profile</div>
+        <table class="data-table">
+          <tbody>
+            <tr><td class="text-muted">Name</td><td class="mono font-bold">0FI_GL_4</td></tr>
+            <tr><td class="text-muted">Type</td><td><span class="tag">Advanced DSO</span></td></tr>
+            <tr><td class="text-muted">Package</td><td>FI_GENERAL</td></tr>
+            <tr><td class="text-muted">Rows</td><td>348,291</td></tr>
+            <tr><td class="text-muted">Size</td><td>2.1 GB</td></tr>
+            <tr><td class="text-muted">Last Load</td><td>Jun 18 2026 04:12</td></tr>
+            <tr><td class="text-muted">Upstream</td><td>2 extractors</td></tr>
+            <tr><td class="text-muted">Downstream</td><td>4 objects (2 queries, 2 CompositeProviders)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title mb-12">Impact Analysis</div>
+        <div class="ai-panel" style="margin:0">
+          <div class="ai-panel-header"><span class="ai-label">AI</span> Migration Impact</div>
+          <div class="ai-rec"><span class="ai-rec-icon">⚠</span><div class="ai-rec-text">ZFI_RISK_01 query depends on deprecated field ZFLD_LEGACY. Must be remapped before migration. <span class="conf-pill">95%</span></div></div>
+          <div class="ai-rec"><span class="ai-rec-icon">✅</span><div class="ai-rec-text">0FI_C04 query is fully compatible with BDC semantic layer. Auto-migration recommended.</div></div>
+        </div>
+        <div class="mt-8 btn-group">
+          <button class="btn btn-ghost btn-sm" onclick="show('s04')">Rationalize</button>
+          <button class="btn btn-primary btn-sm" onclick="show('s10')">Map to BDC</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S04 — RATIONALIZATION WORKBENCH
+══════════════════════════════════════════════════════ -->
+<div id="s04" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / Assess &amp; Plan</div>
+        <h1>Rationalization Workbench</h1>
+        <div class="sub">Classify each BW object as Migrate, Retire, Consolidate, Redesign, or Defer</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost btn-sm">📤 Export Decisions</button>
+        <button class="btn btn-primary btn-sm" onclick="show('s07')">Push to Wave Planner →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="approval-banner">⚠ <strong>12 objects</strong> are awaiting your decision. AI has pre-classified 89% of inventory. Please review and approve decisions before Wave 2 planning.
+    <button class="btn btn-primary btn-sm" style="margin-left:auto">Review AI Decisions</button>
+  </div>
+
+  <div class="grid-4 mb-12">
+    <div class="kpi"><div class="kpi-label">Migrate</div><div class="kpi-value" style="color:#2b7a0b">1,930</div><div class="kpi-bar mt-8"><div class="kpi-bar-fill green" style="width:68%"></div></div><div class="kpi-sub mt-4">68% of inventory</div></div>
+    <div class="kpi"><div class="kpi-label">Retire</div><div class="kpi-value" style="color:#bb0000">497</div><div class="kpi-bar mt-8"><div class="kpi-bar-fill red" style="width:17%"></div></div><div class="kpi-sub mt-4">17% of inventory</div></div>
+    <div class="kpi"><div class="kpi-label">Consolidate / Redesign</div><div class="kpi-value" style="color:#e9730c">308</div><div class="kpi-bar mt-8"><div class="kpi-bar-fill orange" style="width:11%"></div></div><div class="kpi-sub mt-4">11% of inventory</div></div>
+    <div class="kpi"><div class="kpi-label">Pending Decision</div><div class="kpi-value" style="color:#5a6d85">112</div><div class="kpi-bar mt-8"><div class="kpi-bar-fill" style="width:4%;background:#89919a"></div></div><div class="kpi-sub mt-4">4% — needs review</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Object Classification</span>
+      <div class="flex gap-8">
+        <select><option>All Types</option><option>ADSO</option><option>BEx Query</option><option>Extractor</option></select>
+        <select><option>All Decisions</option><option>Pending</option><option>Migrate</option><option>Retire</option></select>
+        <button class="btn btn-ghost btn-sm">Bulk Approve</button>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th><input type="checkbox"></th><th>Object</th><th>Type</th><th>Usage/mo</th><th>Complexity</th><th>AI Recommendation</th><th>Confidence</th><th>Decision</th><th></th></tr></thead>
+      <tbody>
+        <tr>
+          <td><input type="checkbox" checked></td>
+          <td class="mono">0FI_GL_4</td><td><span class="tag">ADSO</span></td><td>4,820</td><td><span class="badge badge-orange">High</span></td>
+          <td><span class="badge badge-green">Migrate</span></td><td>95%</td>
+          <td><select><option selected>Migrate</option><option>Retire</option><option>Consolidate</option><option>Redesign</option><option>Defer</option></select></td>
+          <td><button class="btn btn-ghost btn-sm" onclick="show('s07')">→ Wave</button></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" checked></td>
+          <td class="mono">ZRPT_FI_OLD_01</td><td><span class="tag">BEx Query</span></td><td>3</td><td><span class="badge badge-green">Low</span></td>
+          <td><span class="badge badge-red">Retire</span></td><td>98%</td>
+          <td><select><option>Migrate</option><option selected>Retire</option><option>Consolidate</option><option>Redesign</option><option>Defer</option></select></td>
+          <td><button class="btn btn-danger btn-sm">Confirm Retire</button></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td class="mono">ZSD_BILLING_A</td><td><span class="tag">ADSO</span></td><td>2,140</td><td><span class="badge badge-red">Very High</span></td>
+          <td><span class="badge badge-purple">Redesign</span></td><td>82%</td>
+          <td><select><option>Migrate</option><option>Retire</option><option>Consolidate</option><option selected>Redesign</option><option>Defer</option></select></td>
+          <td><button class="btn btn-ghost btn-sm" onclick="show('s11')">→ Studio</button></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td class="mono">0SD_C03</td><td><span class="tag">BEx Query</span></td><td>8,900</td><td><span class="badge badge-red">Very High</span></td>
+          <td><span class="badge badge-green">Migrate</span></td><td>90%</td>
+          <td><select><option selected>Migrate</option><option>Retire</option><option>Consolidate</option><option>Redesign</option><option>Defer</option></select></td>
+          <td><button class="btn btn-ghost btn-sm" onclick="show('s09')">Analyze FSD</button></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td class="mono">ZHR_HEADCOUNT</td><td><span class="tag">ADSO</span></td><td>88</td><td><span class="badge badge-green">Low</span></td>
+          <td><span class="badge badge-orange">Defer</span></td><td>75%</td>
+          <td><select><option>Migrate</option><option>Retire</option><option>Consolidate</option><option>Redesign</option><option selected>Defer</option></select></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S05 — TCO CALCULATOR
+══════════════════════════════════════════════════════ -->
+<div id="s05" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / Assess &amp; Plan</div>
+        <h1>TCO &amp; Business Case Calculator</h1>
+        <div class="sub">Compare current BW cost with BW PCE and BDC target scenarios</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost btn-sm">💾 Save Scenario</button>
+        <button class="btn btn-primary btn-sm">📊 Export to PPT</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-split-rev mb-12">
+    <!-- Inputs -->
+    <div class="card">
+      <div class="card-title mb-12">Input Assumptions</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div><div class="text-muted mb-4">Annual BW Infrastructure Cost (USD)</div><input type="range" min="500000" max="5000000" value="2400000" style="width:100%"><div class="flex-between text-muted mt-4"><span>$500K</span><span class="font-bold" style="color:#1a2233">$2,400,000</span><span>$5M</span></div></div>
+        <div><div class="text-muted mb-4">BW Basis / Support FTE</div><input type="range" min="1" max="20" value="8" style="width:100%"><div class="flex-between text-muted mt-4"><span>1</span><span class="font-bold" style="color:#1a2233">8 FTE · ~$960K/yr</span><span>20</span></div></div>
+        <div><div class="text-muted mb-4">Migration Effort (months)</div><input type="range" min="6" max="36" value="18" style="width:100%"><div class="flex-between text-muted mt-4"><span>6</span><span class="font-bold" style="color:#1a2233">18 months</span><span>36</span></div></div>
+        <div><div class="text-muted mb-4">Target Scenario</div>
+          <select style="width:100%"><option>BDC (Full Migration) — Recommended</option><option>BW PCE + BDC (Phased)</option><option>BW PCE Only (Interim)</option></select></div>
+        <div><div class="text-muted mb-4">BDC License Assumption</div><input type="range" min="200000" max="2000000" value="800000" style="width:100%"><div class="flex-between text-muted mt-4"><span>$200K</span><span class="font-bold" style="color:#1a2233">$800,000/yr</span><span>$2M</span></div></div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="grid-2" style="gap:12px">
+        <div class="kpi"><div class="kpi-label">3-Year TCO — Current BW</div><div class="kpi-value" style="color:#bb0000">$10.1M</div><div class="kpi-sub">Infra + Support + License</div></div>
+        <div class="kpi"><div class="kpi-label">3-Year TCO — BDC Target</div><div class="kpi-value" style="color:#2b7a0b">$6.3M</div><div class="kpi-sub">BDC + Migration + Support</div></div>
+        <div class="kpi"><div class="kpi-label">Net Savings (3yr)</div><div class="kpi-value" style="color:#0070f2">$3.8M</div><div class="kpi-sub">37% reduction</div></div>
+        <div class="kpi"><div class="kpi-label">Payback Period</div><div class="kpi-value">14<span style="font-size:14px">mo</span></div><div class="kpi-sub">ROI positive from month 15</div></div>
+      </div>
+
+      <!-- Chart -->
+      <div class="card">
+        <div class="card-title mb-12">3-Year Cost Comparison</div>
+        <div style="display:flex;align-items:flex-end;gap:16px;height:150px;padding:0 8px">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:100%;background:#bb0000;height:120px;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px">$3.36M</div>
+            <div class="text-muted" style="font-size:10px">Y1 (Current)</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:100%;background:#e9730c;height:110px;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px">$3.36M</div>
+            <div class="text-muted" style="font-size:10px">Y2 (Current)</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:100%;background:#e9730c;height:110px;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px">$3.36M</div>
+            <div class="text-muted" style="font-size:10px">Y3 (Current)</div>
+          </div>
+          <div style="width:1px;background:#e4e7ec;height:150px"></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:100%;background:#0070f2;height:95px;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px">$2.8M</div>
+            <div class="text-muted" style="font-size:10px">Y1 (BDC)</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:100%;background:#2b7a0b;height:60px;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px">$1.8M</div>
+            <div class="text-muted" style="font-size:10px">Y2 (BDC)</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:100%;background:#2b7a0b;height:55px;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px">$1.7M</div>
+            <div class="text-muted" style="font-size:10px">Y3 (BDC)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S06 — BW TO BW PCE PLANNER
+══════════════════════════════════════════════════════ -->
+<div id="s06" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / Migration Factory</div>
+        <h1>BW to BW PCE Planner</h1>
+        <div class="sub">Optional lift-and-shift to BW Private Cloud Edition as an interim migration step</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="show('s07')">Send to Wave Planner →</button>
+    </div>
+  </div>
+
+  <div class="grid-4 mb-12">
+    <div class="kpi"><div class="kpi-label">PCE Compatibility</div><div class="kpi-value" style="color:#2b7a0b">87<span style="font-size:16px">%</span></div><div class="kpi-bar mt-8"><div class="kpi-bar-fill green" style="width:87%"></div></div></div>
+    <div class="kpi"><div class="kpi-label">Remediation Items</div><div class="kpi-value" style="color:#e9730c">48</div><div class="kpi-sub">Custom code / deprecated APIs</div></div>
+    <div class="kpi"><div class="kpi-label">Estimated Effort</div><div class="kpi-value">6<span style="font-size:14px">mo</span></div><div class="kpi-sub">4 consultants, 2 basis admins</div></div>
+    <div class="kpi"><div class="kpi-label">Risk Level</div><div class="kpi-value" style="color:#e9730c">Medium</div><div class="kpi-sub">15 high-complexity objects</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title mb-12">Compatibility Assessment</div>
+      <table class="data-table">
+        <thead><tr><th>Category</th><th>Total</th><th>Compatible</th><th>Needs Fix</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Custom ABAP Code</td><td>312</td><td>268</td><td>44</td><td><span class="badge badge-orange">Review</span></td></tr>
+          <tr><td>Process Chains</td><td>156</td><td>152</td><td>4</td><td><span class="badge badge-green">Ready</span></td></tr>
+          <tr><td>BAdI Implementations</td><td>28</td><td>24</td><td>4</td><td><span class="badge badge-orange">Review</span></td></tr>
+          <tr><td>Legacy DSO (Classic)</td><td>62</td><td>45</td><td>17</td><td><span class="badge badge-red">Action Req</span></td></tr>
+          <tr><td>Open Hub Destinations</td><td>14</td><td>14</td><td>0</td><td><span class="badge badge-green">Ready</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title mb-12">Migration Timeline</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:80px;text-align:right;font-size:11px;color:#89919a;padding-top:2px">Jul 2026</div>
+          <div style="width:2px;background:#0070f2;flex-shrink:0;min-height:40px;margin-top:4px;border-radius:1px"></div>
+          <div><div class="font-bold text-sm">Remediation Sprint</div><div class="text-muted">Fix 48 compatibility items · Custom code adaptation</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:80px;text-align:right;font-size:11px;color:#89919a;padding-top:2px">Aug 2026</div>
+          <div style="width:2px;background:#0070f2;flex-shrink:0;min-height:40px;margin-top:4px;border-radius:1px"></div>
+          <div><div class="font-bold text-sm">System Copy &amp; Upgrade</div><div class="text-muted">HANA DB migration · BW 7.5 → BW PCE on Azure</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:80px;text-align:right;font-size:11px;color:#89919a;padding-top:2px">Sep 2026</div>
+          <div style="width:2px;background:#89919a;flex-shrink:0;min-height:40px;margin-top:4px;border-radius:1px"></div>
+          <div><div class="font-bold text-sm">Validation &amp; UAT</div><div class="text-muted">Process chain validation · Data reconciliation</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:80px;text-align:right;font-size:11px;color:#89919a;padding-top:2px">Oct 2026</div>
+          <div style="width:2px;background:#89919a;flex-shrink:0;min-height:40px;margin-top:4px;border-radius:1px"></div>
+          <div><div class="font-bold text-sm">Go-Live PCE</div><div class="text-muted">Cutover · BDC migration continues in parallel</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S07 — MIGRATION WAVE PLANNER
+══════════════════════════════════════════════════════ -->
+<div id="s07" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / Migration Factory</div>
+        <h1>Migration Wave Planner</h1>
+        <div class="sub">Group BW objects into waves, assign owners, set dates and validate quality gates</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost btn-sm">+ New Wave</button>
+        <button class="btn btn-primary btn-sm">▶ Start Wave 1</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-4 mb-12">
+    <div class="kpi"><div class="kpi-label">Wave 1 Status</div><div class="kpi-value" style="color:#0070f2">In Progress</div><div class="kpi-bar mt-8"><div class="kpi-bar-fill" style="width:62%"></div></div><div class="kpi-sub mt-4">62% · Target Jul 15</div></div>
+    <div class="kpi"><div class="kpi-label">Objects in Wave 1</div><div class="kpi-value">252</div><div class="kpi-sub">156 done · 96 pending</div></div>
+    <div class="kpi"><div class="kpi-label">Quality Gate</div><div class="kpi-value" style="color:#2b7a0b">Pass</div><div class="kpi-sub">Data reconciliation ✓</div></div>
+    <div class="kpi"><div class="kpi-label">Open Issues</div><div class="kpi-value" style="color:#e9730c">7</div><div class="kpi-sub">2 blockers · 5 minor</div></div>
+  </div>
+
+  <!-- Wave Board -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+    <div class="wave-col">
+      <div class="wave-col-header"><span>Wave 1 — Finance</span><span class="badge badge-blue">Active</span></div>
+      <div class="wave-card"><div class="flex-between"><span class="mono" style="font-size:11px">0FI_GL_4</span><span class="badge badge-green badge-sm" style="font-size:10px">Done</span></div><div class="text-muted mt-4">ADSO · Ravi K.</div></div>
+      <div class="wave-card"><div class="flex-between"><span class="mono" style="font-size:11px">0FI_AP_4</span><span class="badge badge-green badge-sm" style="font-size:10px">Done</span></div><div class="text-muted mt-4">ADSO · Ravi K.</div></div>
+      <div class="wave-card"><div class="flex-between"><span class="mono" style="font-size:11px">0PROFIT_CTR_01A</span><span class="badge badge-blue badge-sm" style="font-size:10px">In Progress</span></div><div class="text-muted mt-4">CompositeProvider · Ana S.</div></div>
+      <div class="wave-card" style="border-color:#bb0000"><div class="flex-between"><span class="mono" style="font-size:11px">ZFI_CUSTOM_03</span><span class="badge badge-red badge-sm" style="font-size:10px">Blocked</span></div><div class="text-muted mt-4">ADSO · ⚠ Dependency issue</div></div>
+      <div style="text-align:center;margin-top:8px"><button class="btn btn-ghost btn-sm" onclick="show('s15')">View Issue →</button></div>
+    </div>
+    <div class="wave-col">
+      <div class="wave-col-header"><span>Wave 2 — Sales</span><span class="badge badge-orange">Planned</span></div>
+      <div class="wave-card"><div class="flex-between"><span class="mono" style="font-size:11px">ZSD_BILLING_A</span><span class="badge badge-gray badge-sm" style="font-size:10px">Pending</span></div><div class="text-muted mt-4">ADSO · Priya M.</div></div>
+      <div class="wave-card"><div class="flex-between"><span class="mono" style="font-size:11px">0SD_C03</span><span class="badge badge-gray badge-sm" style="font-size:10px">Pending</span></div><div class="text-muted mt-4">BEx Query · Priya M.</div></div>
+      <div class="wave-card"><div class="flex-between"><span class="mono" style="font-size:11px">2LIS_02_ITM</span><span class="badge badge-purple badge-sm" style="font-size:10px">Converting</span></div><div class="text-muted mt-4">Extractor → CDS</div></div>
+      <div style="text-align:center;margin-top:8px;color:#89919a;font-size:11px">+86 more objects</div>
+    </div>
+    <div class="wave-col">
+      <div class="wave-col-header"><span>Wave 3 — Supply Chain</span><span class="badge badge-gray">Not Started</span></div>
+      <div style="text-align:center;padding:40px 0;color:#89919a;font-size:12px">
+        <div style="font-size:24px;margin-bottom:8px">📦</div>
+        <div>388 objects to be assigned</div>
+        <div class="mt-8"><button class="btn btn-ghost btn-sm" onclick="show('s04')">Assign from Rationalization</button></div>
+      </div>
+    </div>
+    <div class="wave-col">
+      <div class="wave-col-header"><span>Wave 4 — HR &amp; Payroll</span><span class="badge badge-gray">Not Started</span></div>
+      <div style="text-align:center;padding:40px 0;color:#89919a;font-size:12px">
+        <div style="font-size:24px;margin-bottom:8px">👤</div>
+        <div>204 objects to be assigned</div>
+        <div class="mt-8"><button class="btn btn-ghost btn-sm" onclick="show('s04')">Assign from Rationalization</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S08 — EXTRACTOR TO CDS CONVERTER
+══════════════════════════════════════════════════════ -->
+<div id="s08" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / Migration Factory</div>
+        <h1>Extractor → CDS Converter</h1>
+        <div class="sub">Analyze BW extractors and generate proposed S/4HANA CDS views with annotations</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost btn-sm">Validate Output</button>
+        <button class="btn btn-primary btn-sm">✅ Approve &amp; Push to Backlog</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-split mb-12">
+    <!-- Left: Extractor catalog + source -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card">
+        <div class="card-title mb-12">Extractor Catalog</div>
+        <table class="data-table">
+          <thead><tr><th>Extractor</th><th>Type</th><th>Tables</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr style="background:#e8f2ff"><td class="mono font-bold">2LIS_02_ITM</td><td>LIS</td><td>VBAP, VBAK</td><td><span class="badge badge-blue">Selected</span></td></tr>
+            <tr><td class="mono">2LIS_11_VAHDR</td><td>LIS</td><td>VBAK</td><td><span class="badge badge-green">Converted</span></td></tr>
+            <tr><td class="mono">2LIS_04_P_ARBPL</td><td>LIS</td><td>AFKO, AFPO</td><td><span class="badge badge-gray">Pending</span></td></tr>
+            <tr><td class="mono">ZBEX_CUST_EXTR</td><td>Custom FM</td><td>ZCUST_TAB</td><td><span class="badge badge-red">Complex</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Source: ABAP Extractor Logic</span></div>
+        <div class="code-block">
+<span class="cmt">* LIS Extractor 2LIS_02_ITM — Sales Order Items</span>
+<span class="kw">SELECT</span> vbap~vbeln, vbap~posnr, vbap~matnr,
+       vbap~kwmeng, vbap~netwr, vbap~waerk,
+       vbak~vkorg, vbak~erdat
+  <span class="kw">FROM</span> vbap
+  <span class="kw">INNER JOIN</span> vbak <span class="kw">ON</span> vbak~vbeln = vbap~vbeln
+  <span class="kw">WHERE</span> vbap~mandt = sy-mandt
+    <span class="kw">AND</span> vbak~erdat <span class="kw">BETWEEN</span> p_datum1 <span class="kw">AND</span> p_datum2
+    <span class="kw">AND</span> vbap~abgru = space. <span class="cmt">"non-rejected items</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Generated CDS -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="ai-panel">
+        <div class="ai-panel-header"><span class="ai-label">AI</span> Conversion Analysis</div>
+        <div class="ai-rec"><span class="ai-rec-icon">✅</span><div class="ai-rec-text">Field mapping: 8/9 fields auto-mapped. ZFLD_LEGACY has no S/4 equivalent — manual mapping required. <span class="conf-pill">91%</span></div></div>
+        <div class="ai-rec"><span class="ai-rec-icon">⚡</span><div class="ai-rec-text">Delta handling: Use CDSView @Analytics.dataCategory with delta key on ERDAT+AEDAT.</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Generated CDS View</span><span class="badge badge-green">Auto-Generated</span></div>
+        <div class="code-block">
+<span class="ann">@AbapCatalog.sqlViewName: 'ZV_SD_ORDER_ITM'</span>
+<span class="ann">@Analytics.dataCategory: #CUBE</span>
+<span class="ann">@Analytics.dataExtraction.enabled: true</span>
+<span class="ann">@Analytics.dataExtraction.delta.changeDataCapture.automatic: true</span>
+<span class="ann">@VDM.viewType: #BASIC</span>
+<span class="ann">@ObjectModel.usageType.dataClass: #TRANSACTIONAL</span>
+<span class="kw">define view</span> <span class="typ">Z_SD_SalesOrderItems</span>
+  <span class="kw">as select from</span> vbap
+  <span class="kw">inner join</span> vbak <span class="kw">on</span> vbak.vbeln = vbap.vbeln
+{
+  <span class="ann">@ObjectModel.text.element: ['MaterialDescription']</span>
+  vbap.vbeln <span class="kw">as</span> SalesOrder,
+  vbap.posnr <span class="kw">as</span> SalesOrderItem,
+  vbap.matnr <span class="kw">as</span> Material,
+  <span class="ann">@Semantics.quantity.unitOfMeasure: 'OrderQuantityUnit'</span>
+  vbap.kwmeng <span class="kw">as</span> OrderQuantity,
+  <span class="ann">@Semantics.amount.currencyCode: 'Currency'</span>
+  vbap.netwr <span class="kw">as</span> NetValue,
+  vbap.waerk <span class="kw">as</span> Currency,
+  vbak.vkorg <span class="kw">as</span> SalesOrganization,
+  vbak.erdat <span class="kw">as</span> CreationDate
+}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title mb-8">Field Mapping Review</div>
+        <div class="field-row"><span class="field-name">vbap-vbeln</span><span class="field-arrow">→</span><span class="field-target">SalesOrder</span><span class="badge badge-green" style="margin-left:auto">Auto</span></div>
+        <div class="field-row"><span class="field-name">vbap-matnr</span><span class="field-arrow">→</span><span class="field-target">Material</span><span class="badge badge-green" style="margin-left:auto">Auto</span></div>
+        <div class="field-row"><span class="field-name">vbap-kwmeng</span><span class="field-arrow">→</span><span class="field-target">OrderQuantity</span><span class="badge badge-green" style="margin-left:auto">Auto</span></div>
+        <div class="field-row"><span class="field-name">ZFLD_LEGACY</span><span class="field-arrow">→</span><span class="field-target" style="color:#bb0000">⚠ No mapping</span><span class="badge badge-red" style="margin-left:auto">Manual</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S09 — BW QUERY ANALYZER & FSD GENERATOR
+══════════════════════════════════════════════════════ -->
+<div id="s09" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / Migration Factory</div>
+        <h1>BW Query Analyzer &amp; FSD Generator</h1>
+        <div class="sub">Analyze BEx queries and generate Functional Spec, Technical Spec, and test cases</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost btn-sm">📄 Export Word/PDF</button>
+        <button class="btn btn-ghost btn-sm">📋 Push to Jira</button>
+        <button class="btn btn-primary btn-sm" onclick="show('s10')">Send Mapping → Data Product</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-split-rev">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card">
+        <div class="card-title mb-12">Query Selector</div>
+        <select style="width:100%;margin-bottom:8px"><option>0SD_C03 — Customer Sales Analysis</option><option>0FI_C04 — GL Account Analysis</option><option>ZBEX_MARGIN_01 — Profit Margin Report</option></select>
+        <div class="ai-panel">
+          <div class="ai-panel-header"><span class="ai-label">AI</span> Query Breakdown</div>
+          <div class="ai-rec"><span class="ai-rec-icon">📊</span><div class="ai-rec-text"><strong>InfoProvider:</strong> ZSD_BILLING_A (ADSO) via 0PROFIT_CTR_01A</div></div>
+          <div class="ai-rec"><span class="ai-rec-icon">🔧</span><div class="ai-rec-text"><strong>Variables:</strong> 3 mandatory (Customer, Date Range, Sales Org) · 2 optional</div></div>
+          <div class="ai-rec"><span class="ai-rec-icon">🧮</span><div class="ai-rec-text"><strong>Calc KFs:</strong> Gross Margin % = (Net Revenue - COGS) / Net Revenue · Avg Order Value</div></div>
+          <div class="ai-rec"><span class="ai-rec-icon">🚨</span><div class="ai-rec-text"><strong>Risk:</strong> Restricted KF uses deprecated exception aggregation — needs manual review. <span class="conf-pill" style="background:#ffeeee;color:#aa0000">Flag</span></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title mb-8">Calculated Key Figures</div>
+        <table class="data-table">
+          <thead><tr><th>KF Name</th><th>Formula</th><th>BDC Equivalent</th></tr></thead>
+          <tbody>
+            <tr><td>Gross Margin %</td><td class="mono" style="font-size:10px">(NR - COGS) / NR</td><td><span class="badge badge-green">Auto-mapped</span></td></tr>
+            <tr><td>Avg Order Value</td><td class="mono" style="font-size:10px">Revenue / Orders</td><td><span class="badge badge-green">Auto-mapped</span></td></tr>
+            <tr><td>ZRKF_LEGACY_01</td><td class="mono" style="font-size:10px">Deprecated aggr.</td><td><span class="badge badge-red">Manual req.</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FSD Preview -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">FSD Preview — Auto-Generated</span><span class="badge badge-blue">Draft v1.0</span></div>
+      <div style="background:#f8f9fb;border:1px solid #e4e7ec;border-radius:6px;padding:16px;font-size:12px;line-height:1.7;max-height:520px;overflow-y:auto">
+        <div style="font-size:16px;font-weight:700;margin-bottom:12px;color:#1a2233">Functional Specification Document</div>
+        <div style="font-size:13px;font-weight:700;color:#0057a8;margin-bottom:4px">1. Report Overview</div>
+        <div style="margin-bottom:12px"><strong>Report Name:</strong> Customer Sales Analysis (0SD_C03)<br>
+        <strong>Business Purpose:</strong> Provides sales teams with granular view of customer purchasing patterns, margin analysis and order trends across sales organizations.<br>
+        <strong>Primary Users:</strong> Sales Controllers, Regional Sales Managers, CFO Office<br>
+        <strong>Avg. Monthly Executions:</strong> 8,900 (High criticality)</div>
+        <div style="font-size:13px;font-weight:700;color:#0057a8;margin-bottom:4px">2. Input Variables</div>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11.5px">
+          <tr style="background:#e8f2ff"><th style="padding:6px;text-align:left;border:1px solid #d4e4ff">Variable</th><th style="padding:6px;text-align:left;border:1px solid #d4e4ff">Type</th><th style="padding:6px;text-align:left;border:1px solid #d4e4ff">Mandatory</th></tr>
+          <tr><td style="padding:6px;border:1px solid #e4e7ec">Customer (0CUSTOMER)</td><td style="padding:6px;border:1px solid #e4e7ec">Characteristic Variable</td><td style="padding:6px;border:1px solid #e4e7ec">Yes</td></tr>
+          <tr><td style="padding:6px;border:1px solid #e4e7ec">Posting Date (0CALDAY)</td><td style="padding:6px;border:1px solid #e4e7ec">Date Range Variable</td><td style="padding:6px;border:1px solid #e4e7ec">Yes</td></tr>
+          <tr><td style="padding:6px;border:1px solid #e4e7ec">Sales Org (0SALESORG)</td><td style="padding:6px;border:1px solid #e4e7ec">Characteristic Variable</td><td style="padding:6px;border:1px solid #e4e7ec">Yes</td></tr>
+        </table>
+        <div style="font-size:13px;font-weight:700;color:#0057a8;margin-bottom:4px">3. Key Figures</div>
+        <div style="margin-bottom:12px">Net Revenue, Gross Margin, Gross Margin %, Cost of Goods Sold, Order Quantity, Average Order Value, Returns Value. <strong>Note:</strong> ZRKF_LEGACY_01 requires manual redesign — deprecated exception aggregation not supported in BDC.</div>
+        <div style="font-size:13px;font-weight:700;color:#0057a8;margin-bottom:4px">4. BDC Target Recommendation</div>
+        <div>Map to <strong>Sales Analytics Data Product</strong> in BDC Datasphere. Use SAC Story or embedded analytics for visualization. Gross Margin % to be modeled as calculated measure in BDC semantic layer.</div>
+      </div>
+      <div class="mt-12 btn-group">
+        <button class="btn btn-ghost btn-sm">Edit FSD</button>
+        <button class="btn btn-primary btn-sm">Export Word</button>
+        <button class="btn btn-ghost btn-sm">Create Jira Story</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S10 — INFOPROVIDER TO DATA PRODUCT MAPPER
+══════════════════════════════════════════════════════ -->
+<div id="s10" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / Data Product Studio</div>
+        <h1>InfoProvider → Data Product Mapper</h1>
+        <div class="sub">Map BW InfoProviders into governed, business-friendly BDC data products</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost btn-sm">← Back to Discovery</button>
+        <button class="btn btn-primary btn-sm" onclick="show('s11')">Approve Mapping → Data Product Studio</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="approval-banner">🤖 <strong>AI has clustered 14 Finance InfoProviders</strong> into 3 proposed BDC data products. Please review and approve the groupings before proceeding.
+    <span class="conf-pill" style="margin-left:8px">Avg confidence: 87%</span>
+  </div>
+
+  <div class="grid-split">
+    <!-- Source Objects -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">Source InfoProviders</span><span class="badge badge-blue">14 selected</span></div>
+      <table class="data-table">
+        <thead><tr><th>InfoProvider</th><th>Type</th><th>Rows</th><th>AI Cluster</th></tr></thead>
+        <tbody>
+          <tr style="background:#e8f5e2"><td class="mono">0FI_GL_4</td><td>ADSO</td><td>348K</td><td><span class="badge badge-green">Finance Core</span></td></tr>
+          <tr style="background:#e8f5e2"><td class="mono">0FI_AP_4</td><td>ADSO</td><td>210K</td><td><span class="badge badge-green">Finance Core</span></td></tr>
+          <tr style="background:#e8f5e2"><td class="mono">0PROFIT_CTR_01A</td><td>CompProv</td><td>—</td><td><span class="badge badge-green">Finance Core</span></td></tr>
+          <tr style="background:#fff8e0"><td class="mono">ZSD_BILLING_A</td><td>ADSO</td><td>1.2M</td><td><span class="badge badge-orange">Sales Analytics</span></td></tr>
+          <tr style="background:#fff8e0"><td class="mono">0SD_C03 (source)</td><td>CompProv</td><td>—</td><td><span class="badge badge-orange">Sales Analytics</span></td></tr>
+          <tr style="background:#f3eeff"><td class="mono">ZHR_HEADCOUNT</td><td>ADSO</td><td>88K</td><td><span class="badge badge-purple">HR Analytics</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Target Mapping -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <!-- Data Product Cards -->
+      <div class="card" style="border-color:#2b7a0b;border-left-width:4px">
+        <div class="flex-between mb-8">
+          <div class="font-bold" style="color:#1a6100">Finance Core Data Product</div>
+          <span class="badge badge-green">3 InfoProviders</span>
+        </div>
+        <div class="text-muted mb-8">Domain: Finance · BDC Space: FIN_CORP_01</div>
+        <div class="field-row" style="padding:6px 0"><span class="field-name" style="flex:0 0 140px">Business Domain</span><span>Finance &amp; Controlling</span></div>
+        <div class="field-row" style="padding:6px 0"><span class="field-name" style="flex:0 0 140px">Key Subject Areas</span><span>GL, Accounts Payable, Profit Center</span></div>
+        <div class="field-row" style="padding:6px 0;border:none"><span class="field-name" style="flex:0 0 140px">Proposed Owner</span><span>Ravi K. (FI Team)</span></div>
+        <button class="btn btn-ghost btn-sm mt-8" onclick="show('s11')">Configure in Studio →</button>
+      </div>
+      <div class="card" style="border-color:#e9730c;border-left-width:4px">
+        <div class="flex-between mb-8">
+          <div class="font-bold" style="color:#b85c00">Sales Analytics Data Product</div>
+          <span class="badge badge-orange">2 InfoProviders</span>
+        </div>
+        <div class="text-muted mb-8">Domain: Sales · BDC Space: SD_ANALYTICS_01</div>
+        <div class="field-row" style="padding:6px 0;border:none"><span class="field-name" style="flex:0 0 140px">Proposed Owner</span><span>Priya M. (SD Team)</span></div>
+        <button class="btn btn-ghost btn-sm mt-8" onclick="show('s11')">Configure in Studio →</button>
+      </div>
+      <div class="ai-panel">
+        <div class="ai-panel-header"><span class="ai-label">AI</span> Mapping Recommendation</div>
+        <div class="ai-rec"><span class="ai-rec-icon">💡</span><div class="ai-rec-text">0FI_GL_4 and 0FI_AP_4 share 78% of dimensions. Consolidating into one Finance Core product reduces redundancy and simplifies governance. <span class="conf-pill">91%</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S11 — BDC DATA PRODUCT STUDIO
+══════════════════════════════════════════════════════ -->
+<div id="s11" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / <span onclick="show('s10')">InfoProvider Mapper</span> / Data Product Studio</div>
+        <h1>BDC Data Product Studio</h1>
+        <div class="sub">Define semantic layer, KPIs, ownership, glossary and certification for Finance Core</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost btn-sm" onclick="show('s12')">Test Quality →</button>
+        <button class="btn btn-primary btn-sm">📤 Publish to Governance</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2 mb-12">
+    <!-- Product Profile -->
+    <div class="card">
+      <div class="card-title mb-12">Product Profile</div>
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:8px;font-size:12.5px">
+        <div class="text-muted">Product Name</div><div class="font-bold">Finance Core Data Product</div>
+        <div class="text-muted">Product ID</div><div class="mono">FIN_CORE_DP_001</div>
+        <div class="text-muted">Domain</div><div><span class="tag">Finance &amp; Controlling</span></div>
+        <div class="text-muted">BDC Space</div><div class="mono">FIN_CORP_01</div>
+        <div class="text-muted">Owner</div><div>Ravi Kumar (FI Lead)</div>
+        <div class="text-muted">Steward</div><div>Ana Santos (Data Governance)</div>
+        <div class="text-muted">Certification</div><div><span class="badge badge-orange">In Review</span></div>
+        <div class="text-muted">Version</div><div>v0.3-draft</div>
+        <div class="text-muted">Tags</div><div><span class="tag">finance</span><span class="tag">GL</span><span class="tag">AP</span><span class="tag">profit-center</span></div>
+      </div>
+    </div>
+    <!-- KPI Definitions -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">KPI Definitions</span><button class="btn btn-ghost btn-sm">+ Add KPI</button></div>
+      <table class="data-table">
+        <thead><tr><th>KPI Name</th><th>Formula</th><th>Certified</th></tr></thead>
+        <tbody>
+          <tr><td>Net Revenue</td><td class="mono" style="font-size:10px">SUM(NETWR)</td><td><span class="badge badge-green">✓</span></td></tr>
+          <tr><td>Gross Margin %</td><td class="mono" style="font-size:10px">(NR-COGS)/NR</td><td><span class="badge badge-green">✓</span></td></tr>
+          <tr><td>AP Days Outstanding</td><td class="mono" style="font-size:10px">AP/COGS*365</td><td><span class="badge badge-orange">Draft</span></td></tr>
+          <tr><td>Profit Center Variance</td><td class="mono" style="font-size:10px">ACT - PLAN</td><td><span class="badge badge-orange">Draft</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <!-- Glossary -->
+    <div class="card">
+      <div class="card-title mb-12">Business Glossary Terms</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="padding:8px;background:#f4f5f7;border-radius:6px"><div class="font-bold text-sm">Net Revenue</div><div class="text-muted mt-4">Total invoiced sales amount after returns, net of tax. Source: NETWR field in VBRP.</div></div>
+        <div style="padding:8px;background:#f4f5f7;border-radius:6px"><div class="font-bold text-sm">Gross Margin</div><div class="text-muted mt-4">Net Revenue minus Cost of Goods Sold. Expressed in company currency.</div></div>
+        <div style="padding:8px;background:#e8f2ff;border-radius:6px;border:1px solid #c3d9ff"><div class="font-bold text-sm" style="color:#0057a8">⚠ AP Days Outstanding</div><div class="text-muted mt-4">AI-suggested definition — awaiting finance team approval.</div></div>
+      </div>
+    </div>
+    <!-- Quality Rules -->
+    <div class="card">
+      <div class="card-title mb-12">Quality Rules</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="flex-between" style="padding:8px;background:#f4f5f7;border-radius:6px"><div><div class="font-bold text-sm">Completeness</div><div class="text-muted">NETWR not null</div></div><span class="badge badge-green">Pass 98%</span></div>
+        <div class="flex-between" style="padding:8px;background:#f4f5f7;border-radius:6px"><div><div class="font-bold text-sm">Uniqueness</div><div class="text-muted">No duplicate doc+item</div></div><span class="badge badge-green">Pass</span></div>
+        <div class="flex-between" style="padding:8px;background:#fff8e0;border-radius:6px"><div><div class="font-bold text-sm">Timeliness</div><div class="text-muted">Data lag &lt; 4h</div></div><span class="badge badge-orange">Warn 6h</span></div>
+        <div class="flex-between" style="padding:8px;background:#f4f5f7;border-radius:6px"><div><div class="font-bold text-sm">Reconciliation</div><div class="text-muted">Total = SAP GL balance</div></div><span class="badge badge-green">Pass</span></div>
+      </div>
+    </div>
+    <!-- Certification -->
+    <div class="card">
+      <div class="card-title mb-12">Certification Workflow</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="flex-center gap-8"><div class="dot dot-green"></div><div><div class="font-bold text-sm">Owner Review</div><div class="text-muted">Ravi K. — Approved Jun 15</div></div></div>
+        <div style="width:2px;height:16px;background:#2b7a0b;margin-left:4px"></div>
+        <div class="flex-center gap-8"><div class="dot dot-orange"></div><div><div class="font-bold text-sm">Data Steward Review</div><div class="text-muted">Ana S. — In Progress</div></div></div>
+        <div style="width:2px;height:16px;background:#d9d9d9;margin-left:4px"></div>
+        <div class="flex-center gap-8"><div class="dot dot-gray"></div><div><div class="font-bold text-sm">Governance Committee</div><div class="text-muted">Pending steward approval</div></div></div>
+        <div style="width:2px;height:16px;background:#d9d9d9;margin-left:4px"></div>
+        <div class="flex-center gap-8"><div class="dot dot-gray"></div><div><div class="font-bold text-sm">Published to BDC Catalog</div><div class="text-muted">Not yet published</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S12 — DATA QUALITY ASSURANCE CENTER
+══════════════════════════════════════════════════════ -->
+<div id="s12" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / Data Product Studio</div>
+        <h1>Data Quality Assurance Center</h1>
+        <div class="sub">Profile source and target data · Score quality · Remediate issues</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost btn-sm">🔄 Run Profile</button>
+        <button class="btn btn-primary btn-sm" onclick="show('s15')">Create Remediation Action →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quality Score -->
+  <div class="grid-4 mb-12">
+    <div class="kpi"><div class="kpi-label">Overall Quality Score</div><div class="kpi-value" style="color:#e9730c">76<span style="font-size:16px">%</span></div><div class="kpi-bar mt-8"><div class="kpi-bar-fill orange" style="width:76%"></div></div><div class="kpi-trend warn">Below threshold (80%)</div></div>
+    <div class="kpi"><div class="kpi-label">Completeness</div><div class="kpi-value" style="color:#2b7a0b">98%</div><div class="kpi-bar mt-8"><div class="kpi-bar-fill green" style="width:98%"></div></div></div>
+    <div class="kpi"><div class="kpi-label">Accuracy / Uniqueness</div><div class="kpi-value" style="color:#2b7a0b">99%</div><div class="kpi-bar mt-8"><div class="kpi-bar-fill green" style="width:99%"></div></div></div>
+    <div class="kpi"><div class="kpi-label">Timeliness</div><div class="kpi-value" style="color:#bb0000">61%</div><div class="kpi-bar mt-8"><div class="kpi-bar-fill red" style="width:61%"></div></div><div class="kpi-trend down">Data lag 6h (target 4h)</div></div>
+  </div>
+
+  <div class="grid-split mb-12">
+    <!-- Rule Results -->
+    <div class="card">
+      <div class="card-title mb-12">Quality Rule Results</div>
+      <table class="data-table">
+        <thead><tr><th>Rule</th><th>Dimension</th><th>Records Checked</th><th>Failures</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td>NETWR not null</td><td>Completeness</td><td>348,291</td><td>6,842</td><td><span class="badge badge-green">98%</span></td></tr>
+          <tr><td>No duplicate doc+item</td><td>Uniqueness</td><td>348,291</td><td>0</td><td><span class="badge badge-green">100%</span></td></tr>
+          <tr><td>Recon: Total vs GL</td><td>Accuracy</td><td>1</td><td>0</td><td><span class="badge badge-green">Pass</span></td></tr>
+          <tr><td>Data lag &lt; 4 hours</td><td>Timeliness</td><td>1</td><td>1</td><td><span class="badge badge-red">Fail</span></td></tr>
+          <tr><td>KUNNR referential integrity</td><td>Consistency</td><td>348,291</td><td>1,240</td><td><span class="badge badge-orange">99.6%</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Root Cause + Fixes -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="ai-panel">
+        <div class="ai-panel-header"><span class="ai-label">AI</span> Root Cause Analysis</div>
+        <div class="ai-rec"><span class="ai-rec-icon">🔍</span><div class="ai-rec-text"><strong>Timeliness issue:</strong> Process chain PC_FI_DELTA runs every 4 hours but has a 2h post-processing step that pushes effective lag to 6h. Recommend splitting delta and aggregation steps. <span class="conf-pill">89%</span></div></div>
+        <div class="ai-rec"><span class="ai-rec-icon">🔍</span><div class="ai-rec-text"><strong>NETWR nulls:</strong> 6,842 records from legacy migration batch 2019-Q1 have null NETWR. These are historical records with zero invoice value — can be excluded from quality scope. <span class="conf-pill">95%</span></div></div>
+        <div class="ai-rec"><span class="ai-rec-icon">⚡</span><div class="ai-rec-text"><strong>Fix Suggestion:</strong> Restructure PC_FI_DELTA to run delta load every 2h and aggregation nightly. Estimated lag reduction to &lt; 2h.</div></div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary btn-sm" onclick="show('s15')">Create Action: Fix PC_FI_DELTA</button>
+        <button class="btn btn-ghost btn-sm">Mark as Accepted Risk</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S13 — AI CONSUMPTION COPILOT
+══════════════════════════════════════════════════════ -->
+<div id="s13" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / AI Consumption Hub</div>
+        <h1>AI Consumption Copilot</h1>
+        <div class="sub">Ask questions about migration status, data products, and business insights using natural language</div>
+      </div>
+      <div class="badge badge-green">● 3 data products available</div>
+    </div>
+  </div>
+
+  <div class="grid-split">
+    <!-- Chat -->
+    <div>
+      <div class="chat-container">
+        <div class="chat-messages">
+          <div>
+            <div class="agent-meta"><span class="ai-label">AI</span> Migration Copilot · Anthropic Claude</div>
+            <div class="chat-bubble agent">Hello! I can help you explore your BW migration status, analyze data products, or answer business questions using certified BDC data. What would you like to know?</div>
+          </div>
+          <div class="chat-bubble user">Which migrated finance data products have a quality risk?</div>
+          <div>
+            <div class="agent-meta"><span class="ai-label">AI</span> Migration Copilot · confidence: 91%</div>
+            <div class="chat-bubble agent">
+              <strong>1 data product has an active quality risk:</strong><br><br>
+              📊 <strong>Finance Core Data Product</strong> (FIN_CORE_DP_001)<br>
+              • Quality Score: <span style="color:#e9730c;font-weight:700">76%</span> (threshold: 80%)<br>
+              • Root cause: Data timeliness issue — current lag is 6h, target is 4h<br>
+              • Owner: Ravi K. · Steward: Ana S.<br>
+              • Recommended action: Restructure PC_FI_DELTA process chain<br><br>
+              2 other finance products (Sales Analytics, HR Analytics) are <span style="color:#2b7a0b;font-weight:700">within threshold</span>.
+              <div class="mt-8"><button class="btn btn-ghost btn-sm" onclick="show('s12')" style="font-size:11px">View Quality Center</button> <button class="btn btn-ghost btn-sm" onclick="show('s15')" style="font-size:11px">Create Remediation</button></div>
+            </div>
+          </div>
+          <div class="chat-bubble user">What is the current migration readiness score?</div>
+          <div>
+            <div class="agent-meta"><span class="ai-label">AI</span> Migration Copilot</div>
+            <div class="chat-bubble agent">
+              The overall migration readiness score is <strong style="color:#0070f2">74%</strong> as of the last scan (Jun 18 2026).<br><br>
+              Key drivers:<br>
+              ✅ 68% of BW objects classified (Migrate/Retire/Consolidate)<br>
+              ✅ Wave 1 is 62% complete<br>
+              ⚠ 312 objects still pending rationalization decision<br>
+              ⚠ 18 open risks (5 high severity)<br><br>
+              Completing the 312 pending decisions would likely move readiness to ~82%.
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" placeholder="Ask about migration, data products, quality, or business insights...">
+          <button class="btn btn-primary btn-sm">Send ↑</button>
+        </div>
+      </div>
+      <div class="mt-12">
+        <div class="text-muted mb-8">Suggested questions:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <span class="tag" style="cursor:pointer">Show Wave 1 progress</span>
+          <span class="tag" style="cursor:pointer">Which BEx queries have most users?</span>
+          <span class="tag" style="cursor:pointer">What is the TCO saving?</span>
+          <span class="tag" style="cursor:pointer">Show open agent actions</span>
+          <span class="tag" style="cursor:pointer">Which objects are blocked?</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Product Context + Lineage -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card">
+        <div class="card-title mb-8">Data Product Context</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div class="flex-between" style="padding:8px;background:#e8f5e2;border-radius:6px"><div><span class="font-bold text-sm">Finance Core DP</span><div class="text-muted">GL, AP, Profit Center · 3 InfoProviders</div></div><span class="badge badge-orange">76% quality</span></div>
+          <div class="flex-between" style="padding:8px;background:#e8f5e2;border-radius:6px"><div><span class="font-bold text-sm">Sales Analytics DP</span><div class="text-muted">Billing, Orders · 2 InfoProviders</div></div><span class="badge badge-green">91% quality</span></div>
+          <div class="flex-between" style="padding:8px;background:#f4f5f7;border-radius:6px"><div><span class="font-bold text-sm">HR Analytics DP</span><div class="text-muted">Headcount, Payroll · In progress</div></div><span class="badge badge-gray">Draft</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title mb-8">Lineage Panel — Last Response</div>
+        <div class="text-muted mb-8" style="font-size:11px">Sources used to generate the quality risk answer:</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div class="flex-center gap-8 text-sm"><span>📊</span><span class="mono">FIN_CORE_DP_001</span><span class="badge badge-green">Certified</span></div>
+          <div class="flex-center gap-8 text-sm"><span>🧪</span><span>DQ Rule Engine · Run Jun 18</span></div>
+          <div class="flex-center gap-8 text-sm"><span>🤖</span><span>BW Analysis Agent · v2.1</span></div>
+        </div>
+        <div class="mt-8 btn-group">
+          <button class="btn btn-ghost btn-sm" onclick="show('s14')">Save to Workspace</button>
+          <button class="btn btn-ghost btn-sm">Share via Teams</button>
+        </div>
+      </div>
+      <div class="ai-panel">
+        <div class="ai-panel-header"><span class="ai-label">AI</span> Suggested Follow-up Actions</div>
+        <div class="ai-rec"><span class="ai-rec-icon">⚡</span><div class="ai-rec-text">Create a remediation action for PC_FI_DELTA timeliness fix</div></div>
+        <div class="ai-rec"><span class="ai-rec-icon">📊</span><div class="ai-rec-text">Schedule weekly quality scorecard for Finance Core DP</div></div>
+        <button class="btn btn-primary btn-sm mt-8" onclick="show('s15')">Review in Action Center</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S14 — PERSONA INSIGHT WORKSPACE
+══════════════════════════════════════════════════════ -->
+<div id="s14" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / AI Consumption Hub</div>
+        <h1>Persona Insight Workspace</h1>
+        <div class="sub">Role-specific view of migration insights, KPI dashboards and AI recommendations</div>
+      </div>
+      <div class="flex gap-8">
+        <select style="font-size:12px">
+          <option>Migration Lead</option>
+          <option>Executive Sponsor</option>
+          <option>BW Architect</option>
+          <option>Data Product Owner</option>
+          <option>Business User</option>
+        </select>
+        <button class="btn btn-ghost btn-sm">Share → Teams / Email</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Migration Lead Persona -->
+  <div class="grid-4 mb-12">
+    <div class="kpi"><div class="kpi-label">My Wave Progress</div><div class="kpi-value" style="color:#0070f2">62%</div><div class="kpi-sub">Wave 1 · 156/252 objects</div></div>
+    <div class="kpi"><div class="kpi-label">Objects Assigned to Me</div><div class="kpi-value">128</div><div class="kpi-sub">34 pending decision</div></div>
+    <div class="kpi"><div class="kpi-label">Blockers</div><div class="kpi-value" style="color:#bb0000">2</div><div class="kpi-sub">ZFI_CUSTOM_03 · 0SD_C03</div></div>
+    <div class="kpi"><div class="kpi-label">Next Milestone</div><div class="kpi-value" style="font-size:16px">Jul 15</div><div class="kpi-sub">Wave 1 go-live · 26 days</div></div>
+  </div>
+
+  <div class="grid-2 mb-12">
+    <!-- Insight Cards -->
+    <div class="card">
+      <div class="card-title mb-12">My Insight Cards</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="padding:12px;background:#e8f2ff;border-radius:8px;border-left:4px solid #0070f2">
+          <div class="font-bold text-sm" style="color:#0057a8">Wave 1 at Risk</div>
+          <div class="text-muted mt-4">ZFI_CUSTOM_03 is blocked due to unresolved dependency. Current ETA miss: 3 days. AI suggests reassigning 12 objects from Priya to the unblocked track.</div>
+          <div class="mt-8"><button class="btn btn-primary btn-sm" onclick="show('s15')">View Action</button></div>
+        </div>
+        <div style="padding:12px;background:#e8f5e2;border-radius:8px;border-left:4px solid #2b7a0b">
+          <div class="font-bold text-sm" style="color:#1a6100">Quick Win Opportunity</div>
+          <div class="text-muted mt-4">62 ADSOs with zero usage confirmed for retirement. Approving them now removes 18% of scope from Wave 2 planning.</div>
+          <div class="mt-8"><button class="btn btn-success btn-sm" onclick="show('s04')">Approve in Rationalization</button></div>
+        </div>
+        <div style="padding:12px;background:#fff8e0;border-radius:8px;border-left:4px solid #e9730c">
+          <div class="font-bold text-sm" style="color:#b85c00">Finance DQ Alert</div>
+          <div class="text-muted mt-4">Finance Core data product quality score dropped to 76% (threshold: 80%). Timeliness rule failing since Jun 17 04:00.</div>
+          <div class="mt-8"><button class="btn btn-ghost btn-sm" onclick="show('s12')">View Quality Center</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommended Questions -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card">
+        <div class="card-title mb-12">Recommended Questions for You</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="padding:10px;border:1px solid #e4e7ec;border-radius:6px;cursor:pointer" onclick="show('s13')">
+            <div class="font-bold text-sm">What is the critical path to Wave 1 completion?</div>
+            <div class="text-muted mt-4">Based on your assigned objects and current blockers</div>
+          </div>
+          <div style="padding:10px;border:1px solid #e4e7ec;border-radius:6px;cursor:pointer" onclick="show('s13')">
+            <div class="font-bold text-sm">Which Wave 2 objects have unresolved extractors?</div>
+            <div class="text-muted mt-4">Extractor-to-CDS conversion status for SD scope</div>
+          </div>
+          <div style="padding:10px;border:1px solid #e4e7ec;border-radius:6px;cursor:pointer" onclick="show('s13')">
+            <div class="font-bold text-sm">Show me all open risks with High severity</div>
+            <div class="text-muted mt-4">Risk register filtered for your migration waves</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title mb-8">Saved Insights</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:12px">
+          <div class="flex-between"><span>Finance DQ Root Cause Analysis</span><span class="text-muted">Jun 18</span></div>
+          <div class="flex-between"><span>Wave 1 Progress Summary</span><span class="text-muted">Jun 17</span></div>
+          <div class="flex-between"><span>TCO Comparison — BDC vs PCE</span><span class="text-muted">Jun 15</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S15 — AUTONOMOUS ACTION CENTER
+══════════════════════════════════════════════════════ -->
+<div id="s15" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / Control</div>
+        <h1>Autonomous Action Center</h1>
+        <div class="sub">Review, approve and monitor AI-suggested remediation and workflow actions</div>
+      </div>
+      <div class="badge badge-orange">5 actions pending approval</div>
+    </div>
+  </div>
+
+  <div class="grid-4 mb-12">
+    <div class="kpi"><div class="kpi-label">Pending Approval</div><div class="kpi-value" style="color:#e9730c">5</div></div>
+    <div class="kpi"><div class="kpi-label">Approved Today</div><div class="kpi-value" style="color:#2b7a0b">12</div></div>
+    <div class="kpi"><div class="kpi-label">Executed This Week</div><div class="kpi-value">34</div></div>
+    <div class="kpi"><div class="kpi-label">Success Rate</div><div class="kpi-value" style="color:#2b7a0b">97%</div></div>
+  </div>
+
+  <!-- Action Queue -->
+  <div class="card mb-12">
+    <div class="card-title mb-12">Action Queue — Pending Approval</div>
+    <table class="data-table">
+      <thead><tr><th>Action</th><th>Triggered By</th><th>Type</th><th>Risk</th><th>Details</th><th colspan="2">Decision</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="font-bold">Restructure PC_FI_DELTA schedule</td>
+          <td>Data Quality Agent</td>
+          <td><span class="badge badge-blue">Config Change</span></td>
+          <td><span class="badge badge-orange">Medium</span></td>
+          <td>Split delta (2h) from aggregation (nightly) to fix 6h lag</td>
+          <td><button class="btn btn-success btn-sm">✓ Approve</button></td>
+          <td><button class="btn btn-ghost btn-sm">✗ Reject</button></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Retire 62 unused ADSOs</td>
+          <td>Rationalization Agent</td>
+          <td><span class="badge badge-red">Destructive</span></td>
+          <td><span class="badge badge-red">High</span></td>
+          <td>Deactivate 62 ADSOs with 0 usage in 12 months from PRD-BW-01</td>
+          <td><button class="btn btn-success btn-sm">✓ Approve</button></td>
+          <td><button class="btn btn-ghost btn-sm">✗ Reject</button></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Create Jira ticket: ZFI_CUSTOM_03 blocker</td>
+          <td>Migration Planning Agent</td>
+          <td><span class="badge badge-purple">Ticket Creation</span></td>
+          <td><span class="badge badge-green">Low</span></td>
+          <td>Open JIRA story in MIGR-2026 project for dependency resolution</td>
+          <td><button class="btn btn-success btn-sm">✓ Approve</button></td>
+          <td><button class="btn btn-ghost btn-sm">✗ Reject</button></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Notify Priya M. — Wave 2 readiness review</td>
+          <td>Migration Planning Agent</td>
+          <td><span class="badge badge-blue">Notification</span></td>
+          <td><span class="badge badge-green">Low</span></td>
+          <td>Send Teams message to SD lead re: Wave 2 scope finalization</td>
+          <td><button class="btn btn-success btn-sm">✓ Approve</button></td>
+          <td><button class="btn btn-ghost btn-sm">✗ Reject</button></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Add KUNNR referential integrity rule to DQ</td>
+          <td>Data Quality Agent</td>
+          <td><span class="badge badge-blue">Rule Update</span></td>
+          <td><span class="badge badge-green">Low</span></td>
+          <td>Register new DQ rule for Finance Core DP in DQ Engine</td>
+          <td><button class="btn btn-success btn-sm">✓ Approve</button></td>
+          <td><button class="btn btn-ghost btn-sm">✗ Reject</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Audit Log -->
+  <div class="card">
+    <div class="card-title mb-12">Execution Audit Log</div>
+    <table class="data-table">
+      <thead><tr><th>Timestamp</th><th>Action</th><th>Approved By</th><th>Status</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>Jun 18 09:15</td><td>Retire 14 BEx Queries (0 usage)</td><td>Ravi K.</td><td><span class="badge badge-green">Executed</span></td><td>14 objects deactivated in PRD</td></tr>
+        <tr><td>Jun 17 16:30</td><td>Create JIRA MIGR-2451: SD Extractor gap</td><td>Priya M.</td><td><span class="badge badge-green">Executed</span></td><td>Ticket created · Assigned to Basis</td></tr>
+        <tr><td>Jun 17 11:00</td><td>Update Wave 1 owner — ZFI_AP object group</td><td>Ana S.</td><td><span class="badge badge-green">Executed</span></td><td>Owner updated to Ravi K.</td></tr>
+        <tr><td>Jun 16 14:45</td><td>Send DQ alert notification to FI team</td><td>Auto-approved</td><td><span class="badge badge-green">Executed</span></td><td>Teams message sent to 4 recipients</td></tr>
+        <tr><td>Jun 16 09:00</td><td>Retire 8 legacy DSOs (deprecated)</td><td>Ravi K.</td><td><span class="badge badge-red">Failed</span></td><td>Lock conflict — retrying at 06:00</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     S16 — AGENT ORCHESTRATION CONSOLE
+══════════════════════════════════════════════════════ -->
+<div id="s16" class="screen">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <div class="breadcrumb"><span onclick="show('s01')">Home</span> / Control</div>
+        <h1>Agent Orchestration Console</h1>
+        <div class="sub">Monitor agents, tool calls, memory, prompt versions and error logs · Powered by Anthropic + Infosys Topaz Fabric</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost btn-sm">📋 View All Logs</button>
+        <button class="btn btn-primary btn-sm">+ Register Agent</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-4 mb-12">
+    <div class="kpi"><div class="kpi-label">Active Agents</div><div class="kpi-value" style="color:#2b7a0b">7</div></div>
+    <div class="kpi"><div class="kpi-label">Tool Calls (24h)</div><div class="kpi-value">1,842</div></div>
+    <div class="kpi"><div class="kpi-label">Errors (24h)</div><div class="kpi-value" style="color:#bb0000">3</div></div>
+    <div class="kpi"><div class="kpi-label">Avg Response Time</div><div class="kpi-value">2.4<span style="font-size:14px">s</span></div></div>
+  </div>
+
+  <div class="grid-split-rev mb-12">
+    <!-- Agent Registry -->
+    <div class="card">
+      <div class="card-title mb-12">Agent Registry</div>
+      <div class="agent-row">
+        <div class="agent-dot running"></div>
+        <div style="flex:1"><div class="font-bold text-sm">BW Analysis Agent</div><div class="text-muted">Inventory scan · Dependency analysis · Readiness scoring</div></div>
+        <div style="text-align:right"><span class="badge badge-green">Running</span><div class="text-muted mt-4">342 calls today</div></div>
+      </div>
+      <div class="agent-row">
+        <div class="agent-dot running"></div>
+        <div style="flex:1"><div class="font-bold text-sm">Rationalization Agent</div><div class="text-muted">Classify migrate / retire / consolidate / redesign</div></div>
+        <div style="text-align:right"><span class="badge badge-green">Running</span><div class="text-muted mt-4">88 calls today</div></div>
+      </div>
+      <div class="agent-row">
+        <div class="agent-dot running"></div>
+        <div style="flex:1"><div class="font-bold text-sm">Extractor Modernization Agent</div><div class="text-muted">Convert extractor logic to CDS view proposals</div></div>
+        <div style="text-align:right"><span class="badge badge-blue">Processing</span><div class="text-muted mt-4">12 calls today</div></div>
+      </div>
+      <div class="agent-row">
+        <div class="agent-dot running"></div>
+        <div style="flex:1"><div class="font-bold text-sm">BW Query Documentation Agent</div><div class="text-muted">Generate FSD, TSD, test cases from BEx queries</div></div>
+        <div style="text-align:right"><span class="badge badge-green">Running</span><div class="text-muted mt-4">24 calls today</div></div>
+      </div>
+      <div class="agent-row">
+        <div class="agent-dot running"></div>
+        <div style="flex:1"><div class="font-bold text-sm">Data Quality Agent</div><div class="text-muted">Profile data · Recommend remediation</div></div>
+        <div style="text-align:right"><span class="badge badge-green">Running</span><div class="text-muted mt-4">198 calls today</div></div>
+      </div>
+      <div class="agent-row">
+        <div class="agent-dot running"></div>
+        <div style="flex:1"><div class="font-bold text-sm">Consumption Copilot Agent</div><div class="text-muted">NL Q&amp;A · Insight generation · Persona workspace</div></div>
+        <div style="text-align:right"><span class="badge badge-green">Running</span><div class="text-muted mt-4">1,108 calls today</div></div>
+      </div>
+      <div class="agent-row">
+        <div class="agent-dot error"></div>
+        <div style="flex:1"><div class="font-bold text-sm">Autonomous Action Agent</div><div class="text-muted">Create tickets · Trigger workflows · Notify owners</div></div>
+        <div style="text-align:right"><span class="badge badge-red">Error</span><div class="text-muted mt-4">70 calls · 3 errors</div></div>
+      </div>
+    </div>
+
+    <!-- Tool Calls + Logs -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card">
+        <div class="card-title mb-12">Recent Tool Calls</div>
+        <table class="data-table">
+          <thead><tr><th>Time</th><th>Agent</th><th>Tool</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td class="mono" style="font-size:10px">09:48:32</td><td>BW Analysis</td><td class="mono" style="font-size:10px">scan_bw_system()</td><td><span class="badge badge-green">OK</span></td></tr>
+            <tr><td class="mono" style="font-size:10px">09:47:11</td><td>Consumption Copilot</td><td class="mono" style="font-size:10px">query_data_product(FIN_CORE)</td><td><span class="badge badge-green">OK</span></td></tr>
+            <tr><td class="mono" style="font-size:10px">09:45:58</td><td>Action Agent</td><td class="mono" style="font-size:10px">create_jira_ticket()</td><td><span class="badge badge-red">Error</span></td></tr>
+            <tr><td class="mono" style="font-size:10px">09:44:22</td><td>DQ Agent</td><td class="mono" style="font-size:10px">run_dq_rules(FIN_CORE_DP)</td><td><span class="badge badge-green">OK</span></td></tr>
+            <tr><td class="mono" style="font-size:10px">09:43:10</td><td>Rationalization</td><td class="mono" style="font-size:10px">classify_objects(batch=34)</td><td><span class="badge badge-green">OK</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title mb-8">Error Logs</div>
+        <div class="code-block" style="font-size:11px;max-height:160px;overflow-y:auto">
+<span class="dot dot-red" style="display:inline-block;margin-right:6px"></span><span class="cmt">09:45:58 ERROR [Action Agent]</span>
+create_jira_ticket() FAILED
+<span class="str">JiraError: 401 Unauthorized</span>
+Token expired — re-auth required
+Tool: jira_create_issue
+Payload: {"project":"MIGR-2026",
+  "summary":"ZFI_CUSTOM_03 blocker",
+  "type":"Story"}
+<span class="cmt">→ Retrying with refreshed token at 09:55</span>
+
+<span class="cmt">09:12:03 WARN [Consumption Agent]</span>
+Data product FIN_CORE_DP confidence
+degraded: 91% → 87%
+<span class="str">Reason: DQ score below 80% threshold</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title mb-8">Prompt Versions</div>
+        <table class="data-table">
+          <thead><tr><th>Agent</th><th>Prompt Version</th><th>Last Updated</th></tr></thead>
+          <tbody>
+            <tr><td>BW Analysis</td><td class="mono">v2.1.4</td><td>Jun 10 2026</td></tr>
+            <tr><td>Rationalization</td><td class="mono">v1.8.2</td><td>Jun 5 2026</td></tr>
+            <tr><td>Consumption Copilot</td><td class="mono">v3.0.1</td><td>Jun 17 2026</td></tr>
+            <tr><td>Action Agent</td><td class="mono">v1.5.0</td><td>May 28 2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const screen = document.getElementById(id);
+  if (screen) screen.classList.add('active');
+  const screenMap = {
+    s01: 0, s02: 1, s03: 2, s04: 3, s05: 4,
+    s06: 5, s07: 6, s08: 7, s09: 8,
+    s10: 9, s11: 10, s12: 11,
+    s13: 12, s14: 13,
+    s15: 14, s16: 15
+  };
+  const navItems = document.querySelectorAll('.nav-item');
+  const idx = screenMap[id];
+  if (idx !== undefined && navItems[idx]) navItems[idx].classList.add('active');
+  document.querySelector('.canvas').scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

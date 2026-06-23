@@ -1,0 +1,22 @@
+{
+  "initialMessage": "Hello! I can help you explore your BW migration status, analyze data products, or answer business questions using certified BDC data. What would you like to know?",
+  "suggestedQuestions": [
+    "Show Wave 1 progress",
+    "Which BEx queries have most users?",
+    "What is the TCO saving?",
+    "Show open agent actions",
+    "Which objects are blocked?"
+  ],
+  "cannedResponses": {
+    "Which migrated finance data products have a quality risk?": {
+      "text": "**1 data product has an active quality risk:**\n\n📊 **Finance Core Data Product** (FIN_CORE_DP_001)\n• Quality Score: **76%** (threshold: 80%)\n• Root cause: Data timeliness issue — current lag is 6h, target is 4h\n• Owner: Ravi K. · Steward: Ana S.\n• Recommended action: Restructure PC_FI_DELTA process chain\n\n2 other finance products (Sales Analytics, HR Analytics) are **within threshold**.",
+      "confidence": 91,
+      "sources": ["FIN_CORE_DP_001", "DQ Rule Engine · Run Jun 18", "BW Analysis Agent · v2.1"]
+    },
+    "What is the current migration readiness score?": {
+      "text": "The overall migration readiness score is **74%** as of the last scan (Jun 18 2026).\n\nKey drivers:\n✅ 68% of BW objects classified (Migrate/Retire/Consolidate)\n✅ Wave 1 is 62% complete\n⚠ 312 objects still pending rationalization decision\n⚠ 18 open risks (5 high severity)\n\nCompleting the 312 pending decisions would likely move readiness to ~82%.",
+      "confidence": 95,
+      "sources": ["dashboard.json", "BW Analysis Agent · v2.1"]
+    }
+  }
+}

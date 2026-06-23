@@ -1,0 +1,72 @@
+[
+  {
+    "id": "FIN_CORE_DP_001",
+    "name": "Finance Core Data Product",
+    "domain": "Finance & Controlling",
+    "bdcSpace": "FIN_CORP_01",
+    "owner": "Ravi Kumar (FI Lead)",
+    "steward": "Ana Santos (Data Governance)",
+    "certificationStatus": "In Review",
+    "version": "v0.3-draft",
+    "qualityScore": 76,
+    "tags": ["finance", "GL", "AP", "profit-center"],
+    "sourceInfoProviders": ["0FI_GL_4", "0FI_AP_4", "0PROFIT_CTR_01A"],
+    "kpis": [
+      { "name": "Net Revenue",          "formula": "SUM(NETWR)",            "certified": true  },
+      { "name": "Gross Margin %",        "formula": "(NR-COGS)/NR",         "certified": true  },
+      { "name": "AP Days Outstanding",   "formula": "AP/COGS*365",          "certified": false },
+      { "name": "Profit Center Variance","formula": "ACT - PLAN",           "certified": false }
+    ],
+    "glossaryTerms": [
+      { "term": "Net Revenue",          "definition": "Total invoiced sales amount after returns, net of tax. Source: NETWR field in VBRP.", "approved": true  },
+      { "term": "Gross Margin",         "definition": "Net Revenue minus Cost of Goods Sold. Expressed in company currency.",              "approved": true  },
+      { "term": "AP Days Outstanding",  "definition": "AI-suggested definition — awaiting finance team approval.",                         "approved": false }
+    ],
+    "qualityRules": [
+      { "name": "Completeness",    "description": "NETWR not null",          "result": "Pass", "score": 98  },
+      { "name": "Uniqueness",      "description": "No duplicate doc+item",   "result": "Pass", "score": 100 },
+      { "name": "Timeliness",      "description": "Data lag < 4h",           "result": "Warn", "score": 61  },
+      { "name": "Reconciliation",  "description": "Total = SAP GL balance",  "result": "Pass", "score": 100 }
+    ],
+    "certificationSteps": [
+      { "step": "Owner Review",          "assignee": "Ravi K.",  "status": "Approved",    "date": "2026-06-15" },
+      { "step": "Data Steward Review",   "assignee": "Ana S.",   "status": "In Progress", "date": null         },
+      { "step": "Governance Committee",  "assignee": "Board",    "status": "Pending",     "date": null         },
+      { "step": "Published to BDC",      "assignee": "System",   "status": "Pending",     "date": null         }
+    ]
+  },
+  {
+    "id": "SALES_ANALYTICS_DP_001",
+    "name": "Sales Analytics Data Product",
+    "domain": "Sales & Distribution",
+    "bdcSpace": "SD_ANALYTICS_01",
+    "owner": "Priya M. (SD Team)",
+    "steward": "TBD",
+    "certificationStatus": "Draft",
+    "version": "v0.1-draft",
+    "qualityScore": 91,
+    "tags": ["sales", "billing", "orders"],
+    "sourceInfoProviders": ["ZSD_BILLING_A", "0SD_C03"],
+    "kpis": [],
+    "glossaryTerms": [],
+    "qualityRules": [],
+    "certificationSteps": []
+  },
+  {
+    "id": "HR_ANALYTICS_DP_001",
+    "name": "HR Analytics Data Product",
+    "domain": "Human Resources",
+    "bdcSpace": "HR_ANALYTICS_01",
+    "owner": "TBD",
+    "steward": "TBD",
+    "certificationStatus": "Draft",
+    "version": "v0.1-draft",
+    "qualityScore": null,
+    "tags": ["hr", "headcount", "payroll"],
+    "sourceInfoProviders": ["ZHR_HEADCOUNT"],
+    "kpis": [],
+    "glossaryTerms": [],
+    "qualityRules": [],
+    "certificationSteps": []
+  }
+]

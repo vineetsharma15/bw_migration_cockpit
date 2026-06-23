@@ -1,0 +1,22 @@
+{
+  "roles": ["Executive Sponsor", "Migration Lead", "BW Architect", "Data Product Owner", "Data Steward", "Business User", "AI Engineer"],
+  "users": [
+    { "id": "U001", "name": "Vineet Sharma",    "email": "vineet.sharma@corp.com",   "role": "Migration Lead",    "team": "Central Migration CoE", "status": "Active",   "lastLogin": "2026-06-18T09:30:00Z", "screens": ["All"],              "avatar": "VS" },
+    { "id": "U002", "name": "Ravi Kumar",       "email": "ravi.kumar@corp.com",      "role": "BW Architect",     "team": "Finance IT",            "status": "Active",   "lastLogin": "2026-06-18T08:15:00Z", "screens": ["Discovery","Dependency","Rationalization","WavePlanner","Extractor","Query"], "avatar": "RK" },
+    { "id": "U003", "name": "Priya Mehta",      "email": "priya.mehta@corp.com",     "role": "BW Architect",     "team": "Sales IT",              "status": "Active",   "lastLogin": "2026-06-17T16:45:00Z", "screens": ["Discovery","Dependency","Extractor","Query"], "avatar": "PM" },
+    { "id": "U004", "name": "Ana Santos",       "email": "ana.santos@corp.com",      "role": "Data Steward",     "team": "Data Governance",       "status": "Active",   "lastLogin": "2026-06-18T07:00:00Z", "screens": ["DataQuality","DataProductStudio","GovernanceCenter"], "avatar": "AS" },
+    { "id": "U005", "name": "James Chen",       "email": "james.chen@corp.com",      "role": "Data Product Owner","team": "Finance Analytics",    "status": "Active",   "lastLogin": "2026-06-17T14:20:00Z", "screens": ["InfoProviderMapper","DataProductStudio","DataQuality"], "avatar": "JC" },
+    { "id": "U006", "name": "Sarah Williams",   "email": "sarah.williams@corp.com",  "role": "Executive Sponsor","team": "C-Suite",               "status": "Active",   "lastLogin": "2026-06-15T11:00:00Z", "screens": ["CommandCenter","TCOCalculator"], "avatar": "SW" },
+    { "id": "U007", "name": "Mohammed Al-Rashid","email": "m.alrashid@corp.com",    "role": "Business User",    "team": "Finance Operations",    "status": "Active",   "lastLogin": "2026-06-18T09:00:00Z", "screens": ["AICopilot","PersonaWorkspace"], "avatar": "MA" },
+    { "id": "U008", "name": "Lisa Park",        "email": "lisa.park@corp.com",       "role": "AI Engineer",      "team": "AI CoE",                "status": "Active",   "lastLogin": "2026-06-18T08:45:00Z", "screens": ["AgentConsole","ActionCenter"], "avatar": "LP" },
+    { "id": "U009", "name": "David Okonkwo",    "email": "d.okonkwo@corp.com",       "role": "Migration Lead",   "team": "Supply Chain IT",       "status": "Inactive", "lastLogin": "2026-05-30T10:00:00Z", "screens": ["WavePlanner","Rationalization"], "avatar": "DO" },
+    { "id": "U010", "name": "Nina Petrova",     "email": "nina.petrova@corp.com",    "role": "Data Steward",     "team": "Data Governance",       "status": "Pending",  "lastLogin": null,                   "screens": ["DataQuality"], "avatar": "NP" }
+  ],
+  "activityLog": [
+    { "user": "Vineet Sharma",    "action": "Approved action ACT-001",              "timestamp": "2026-06-18T09:15:00Z" },
+    { "user": "Ravi Kumar",       "action": "Classified 12 ADSOs as Migrate",       "timestamp": "2026-06-18T08:20:00Z" },
+    { "user": "Ana Santos",       "action": "Approved Data Product certification",   "timestamp": "2026-06-17T16:30:00Z" },
+    { "user": "James Chen",       "action": "Updated KPI: Gross Margin %",          "timestamp": "2026-06-17T14:45:00Z" },
+    { "user": "Priya Mehta",      "action": "Reviewed FSD for 0SD_C03",             "timestamp": "2026-06-17T13:00:00Z" }
+  ]
+}
