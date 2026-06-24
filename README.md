@@ -1,4 +1,6 @@
-# SAP BW/HANA → SAP BDC Migration Cockpit
+# SAP BW → SAP Business Data Cloud Migration Cockpit
+
+**Data Estate Modernization powered by Infosys Topaz Agentic Framework**
 
 An AI-powered cockpit for end-to-end SAP BW / Native HANA to SAP Business Data Cloud (BDC) migration programs. Built with React (Vite), React Router v6, and JSON-based mock data — designed to be extended screen by screen into a fully backend-connected application.
 
@@ -9,26 +11,32 @@ An AI-powered cockpit for end-to-end SAP BW / Native HANA to SAP Business Data C
 1. [Running the App Locally](#1-running-the-app-locally)
 2. [Running the HTML Wireframe Locally](#2-running-the-html-wireframe-locally)
 3. [Architecture Overview](#3-architecture-overview)
-4. [End-to-End Migration Journey](#4-end-to-end-migration-journey)
+4. [Migration Journey & Agentic Framework](#4-migration-journey--agentic-framework)
 5. [Screen Reference](#5-screen-reference)
    - [Command Center](#51-command-center)
-   - [BW Discovery](#52-bw-discovery)
-   - [Dependency Explorer](#53-dependency-explorer)
-   - [Rationalization](#54-rationalization)
-   - [TCO Calculator](#55-tco-calculator)
-   - [BW to BW PCE Planner](#56-bw-to-bw-pce-planner)
-   - [Wave Planner](#57-wave-planner)
-   - [Extractor → CDS Studio](#58-extractor--cds-studio)
-   - [Query Analyzer & FSD Generator](#59-query-analyzer--fsd-generator)
-   - [InfoProvider Mapper](#510-infoprovider-mapper)
-   - [Data Product Studio](#511-data-product-studio)
-   - [Data Quality Center](#512-data-quality-center)
-   - [AI Consumption Copilot](#513-ai-consumption-copilot)
-   - [Persona Insight Workspace](#514-persona-insight-workspace)
-   - [Autonomous Action Center](#515-autonomous-action-center)
-   - [Agent Console](#516-agent-console)
-   - [User Management](#517-user-management)
-   - [Connections](#518-connections)
+   - **Step 1 · Assess & Plan**
+     - [BW Discovery](#52-bw-discovery)
+     - [Dependency & Lineage Explorer](#53-dependency--lineage-explorer)
+     - [AI-Driven Report Rationalization](#54-ai-driven-report-rationalization)
+     - [TCO Calculator & Sizing Recommender](#55-tco-calculator--sizing-recommender)
+   - **Step 2 · Lift to BW PCE (Optional)**
+     - [BW to BW PCE Planner](#56-bw-to-bw-pce-planner)
+     - [Migration Wave Planner](#57-migration-wave-planner)
+     - [BEX Query Analyzer & Auto-TSD Generator](#58-bex-query-analyzer--auto-tsd-generator)
+   - **Step 3 · Shift to BDC Data Products**
+     - [Extractor → CDS Converter](#59-extractor--cds-converter)
+     - [InfoProvider → Data Product Mapper](#510-infoprovider--data-product-mapper)
+     - [BDC Data Product Studio](#511-bdc-data-product-studio)
+     - [AI-Driven Data Quality Assurance](#512-ai-driven-data-quality-assurance)
+   - **Step 4A · AI Driven Consumption**
+     - [AI Co-pilot for Business](#513-ai-co-pilot-for-business)
+     - [Persona Insight Workspace](#514-persona-insight-workspace)
+   - **Step 4B · Autonomous Insights to Action**
+     - [Autonomous Action Center](#515-autonomous-action-center)
+     - [Agent Orchestration Console](#516-agent-orchestration-console)
+   - **Administration**
+     - [User Management](#517-user-management)
+     - [Connections](#518-connections)
 6. [Data Architecture](#6-data-architecture)
 7. [Extending to a Real Backend](#7-extending-to-a-real-backend)
 
@@ -58,7 +66,7 @@ The terminal will print a local URL (typically `http://localhost:5173`). Open it
 
 ### Navigation
 
-The app opens on the **Command Center** (`/command-center`). Use the left sidebar to navigate between all 18 screens. The top bar has a **Copilot** button that jumps to the AI chat screen.
+The app opens on the **Command Center** (`/command-center`), which displays the 5-step migration journey strip at the top for direct navigation. The left sidebar is organised into the 5 migration steps plus Administration. The top bar has an **AI Co-pilot** button that jumps directly to the chat screen.
 
 ### Build for Production
 
@@ -81,8 +89,6 @@ open wireframe.html
 python3 -m http.server 8080
 # then open http://localhost:8080/wireframe.html
 ```
-
-Use the buttons at the top of the wireframe page to switch between screens. The wireframe uses an inline `show(id)` JavaScript function to toggle `<section>` elements — no framework required.
 
 ---
 
@@ -113,8 +119,8 @@ src/
 ├── components/
 │   ├── layout/
 │   │   ├── Layout.jsx         # Shell: TopBar + Sidebar + <Outlet />
-│   │   ├── TopBar.jsx         # Logo, search, Copilot button, avatar
-│   │   └── Sidebar.jsx        # NavLink-based navigation with sections
+│   │   ├── TopBar.jsx         # Logo, search, AI Co-pilot button, avatar
+│   │   └── Sidebar.jsx        # NavLink-based navigation organised by step
 │   └── common/
 │       ├── KPICard.jsx        # Metric card with optional progress bar
 │       ├── Badge.jsx          # Status badge (30+ status → CSS class map)
@@ -126,50 +132,34 @@ src/
 
 ---
 
-## 4. End-to-End Migration Journey
+## 4. Migration Journey & Agentic Framework
 
-The cockpit supports four phases of the migration lifecycle. Each phase maps to one or more screens.
+The cockpit implements the **Infosys Topaz Agentic Framework** — a 5-step migration journey where AI accelerates every phase.
 
-### Phase 1 — Assess & Plan
+```
+Step 1           Step 2              Step 3                  Step 4A              Step 4B
+Assess & Plan  → Lift to BW PCE  →  Shift to BDC        →   AI Driven       →   Autonomous
+                 (Optional)          Data Products            Consumption          Insights to Action
 
-**Goal:** Understand what exists in BW, decide what to migrate, retire, or redesign, and estimate cost and effort.
+AI Accelerator:
+System scan,     Accelerate Shift    Re-architecture          NL queries &         Autonomous
+lineage &        and assure quality  with confidence          auto-insights        actions
+Documentation    of migration
+```
 
-1. **Connections** — Register and test RFC connections to all BW source systems (PRD, QAS, DEV). Verify BDC tenant OAuth credentials.
-2. **BW Discovery** — Run an automated scan. The cockpit inventories all 2,847 BW objects (ADSOs, DSOs, InfoCubes, MultiProviders, CompositeProviders, BEx Queries, Process Chains, Transformations, etc.) with usage metrics, last-used dates, complexity scores, and package owners.
-3. **Dependency Explorer** — Visualise lineage across the object graph. Understand which InfoCubes feed which queries. Identify cascading impacts before moving an object.
-4. **Rationalization** — AI analyses usage and complexity to recommend Migrate / Retire / Consolidate / Redesign per object. Migration Leads review AI recommendations and lock in decisions. 312 pending decisions drive the migration scope.
-5. **TCO Calculator** — Model the 3-year total cost of ownership: BW infrastructure, SAP licences, BDC subscription, and migration execution effort. The live sliders compute projected savings in real time.
-6. **BW to BW PCE Planner** — Optional path: lift-and-shift to BW Private Cloud Edition as an interim step before full BDC migration. Assess PCE compatibility (87% in demo) and plan the remediation sprint.
+### Agentic Framework — 4 Agent Tiers
 
-### Phase 2 — Migration Factory
-
-**Goal:** Execute the migration object by object, in structured waves, with AI-generated code reviewed by humans.
-
-7. **Wave Planner** — Objects decided as "Migrate" are grouped into waves by domain (Finance, Sales, HR, Supply Chain). Each wave has an owner, target date, quality gate, and progress tracking. Blocked objects are flagged with root-cause notes.
-8. **Extractor → CDS Studio** — For each ADSO/DSO/DataSource, the AI generates an equivalent SAP CDS view with delta-capable annotations. Engineers review the ABAP source vs. generated CDS side by side, validate field mappings (auto vs. manual), and approve before deployment.
-9. **Query Analyzer & FSD Generator** — BEx queries are analysed for complexity (variables, calculated key figures, exceptions). The AI produces a Functional Specification Document (FSD) that describes the equivalent BDC Analytic Model. Architects review and approve before handoff to developers.
-
-### Phase 3 — Data Product Studio
-
-**Goal:** Package migrated data into governed, certified, reusable Data Products in BDC / SAP Datasphere.
-
-10. **InfoProvider Mapper** — Source InfoProviders (InfoCubes, ADSOs) are mapped to target BDC Data Products by domain. The AI proposes clustering and naming conventions.
-11. **Data Product Studio** — Define KPIs, glossary terms, quality rules, and certification workflows for each Data Product. Track certification steps (Technical Review → Data Steward Signoff → Owner Approval → Published).
-12. **Data Quality Center** — Monitor data quality across five dimensions: Completeness, Accuracy, Consistency, Timeliness, and Uniqueness. AI identifies root causes for failing rules and suggests remediation actions.
-
-### Phase 4 — AI Consumption & Control
-
-**Goal:** Enable business users to consume migrated data via natural language, and give the program team governance over autonomous AI actions.
-
-13. **AI Consumption Copilot** — Business users ask natural language questions against certified BDC Data Products. The copilot answers with confidence scores, cites source Data Products, and suggests follow-up actions.
-14. **Persona Insight Workspace** — Role-specific dashboards. A Migration Lead sees wave progress and blockers. An Executive Sponsor sees TCO savings and readiness. A BW Architect sees extraction coverage. Each persona gets curated insight cards and recommended questions.
-15. **Autonomous Action Center** — AI agents propose actions (e.g. "Retire 62 zero-usage ADSOs", "Create CDS view for ZFI_AR_AGING"). A human reviews and approves or rejects each action before execution. An audit log records every decision.
-16. **Agent Console** — Operational view of all 8 registered AI agents (Discovery, Rationalization, CDS Generator, Query Analyzer, Mapping, Quality, Copilot, Orchestrator). Shows real-time status, tool call history, and error logs.
+| Tier | Agents | Migration Steps |
+|------|--------|-----------------|
+| **Analysis Agents** | Agentic DW System Analysis Tool · TCO Calculator · Sizing Recommender · AI-Driven Report Rationalization · BEX Query & FSD Creator | Step 1 |
+| **Lift-Shift Orchestration Agents** | Intelligent Object Migration Agent · Code Modernization Agent · Auto TSD Generation | Step 2 & 3 |
+| **Consumption & Governance Agents** | Data Catalogue & Glossary · AI-Driven Data Quality Assurance · Co-pilot for Business · Autonomous Insights Generation Agent | Step 3 & 4A |
+| **Industry Data Products / Agents** | Joule agents for S/4 process acceleration · BDC Data Products — LS, CPG, Retail & Utilities | Step 4B |
 
 ### Governance Throughout
 
-- Every AI output (recommendations, generated code, FSDs, mappings) goes through a human approval gate before taking effect.
-- The Action Center records who approved what and when.
+- Every AI output (recommendations, generated code, TSDs/FSDs, mappings) goes through a human approval gate before taking effect.
+- The Autonomous Action Center records who approved what and when.
 - Data Stewards must sign off on Data Product certification.
 - User roles control screen-level access — Business Users cannot access the Agent Console or Action Center.
 
@@ -182,15 +172,20 @@ The cockpit supports four phases of the migration lifecycle. Each phase maps to 
 **Route:** `/command-center`  
 **Persona:** All (especially Executive Sponsor, Migration Lead)
 
-The home screen. Shows the overall migration health at a glance:
+The home screen. Features an interactive **5-step migration journey strip** at the top with direct navigation to each step's screens, plus:
 
 - **Readiness Score** (74%) — composite of object coverage, wave progress, data quality, and open risks
 - **Object Inventory** — breakdown of 2,847 objects by type with decision status
 - **Wave Progress** — progress bars for all 4 migration waves
-- **AI Recommendations** — top 4 AI-surfaced actions with priority
-- **Open Risks** — top 5 risks with severity and owner
+- **AI Agent Recommendations** — top AI-surfaced actions with priority and confidence
+- **Open Risks** — top risks with severity and owner
 
-How it fits the journey: The first screen a Migration Lead opens each morning. If the readiness score drops or a new high-severity risk appears, this is where they see it.
+---
+
+### Step 1 · Assess & Plan
+
+*Goal: Inventory and rationalize BW objects, define scope, and build the business case.*  
+*AI Accelerator: System scan, lineage analysis & Documentation (Analysis Agents)*
 
 ---
 
@@ -199,63 +194,61 @@ How it fits the journey: The first screen a Migration Lead opens each morning. I
 **Route:** `/bw-discovery`  
 **Persona:** BW Architect, Migration Lead
 
-Displays the complete BW object inventory from the connected source system scan:
+**Agentic DW System Analysis Tool** — scans the connected BW system and inventories all objects:
 
-- Filter by object type (ADSO, InfoCube, BEx Query, etc.) and rationalization decision
-- Table shows: object name, type, package, owner, last used, usage/month, complexity, size, decision
-- Action buttons route directly to Dependency Explorer, Rationalization, and Extractor Studio for the selected object
-
-How it fits the journey: After connecting to BW (Connections screen) and running a scan, architects work through the object list to understand scope and validate AI-assigned decisions before Wave Planning.
+- Filter by object type (ADSO, InfoCube, BEx Query, Process Chain, etc.) and rationalization decision
+- Table shows: object name, type, package, owner, last used, usage/month, complexity, decision
+- Action buttons route directly to Dependency Explorer, Rationalization, and Extractor Converter for the selected object
+- System connection panel shows host, release, DB size, and last scan completion status
 
 ---
 
-### 5.3 Dependency Explorer
+### 5.3 Dependency & Lineage Explorer
 
 **Route:** `/dependency-explorer`  
 **Persona:** BW Architect
 
-SVG-rendered lineage graph showing the source-to-target object chain:
+**Analysis Agent — Lineage Analysis & Documentation** — SVG-rendered lineage graph:
 
 - Visual graph from DataSources → Transformations → ADSOs → MultiProviders → BEx Queries
-- Object profile panel with full metadata
-- AI impact analysis: which downstream objects are affected if this object changes
-- Navigate to Rationalization or Wave Planner from the impact panel
-
-How it fits the journey: Before retiring or migrating an object, architects use this screen to confirm that no active queries or reports depend on it unexpectedly.
+- Object profile panel with full metadata (rows, size, upstream/downstream counts)
+- AI migration impact analysis: which downstream objects are affected if this object changes
+- Navigate to Rationalization or InfoProvider Mapper from the impact panel
 
 ---
 
-### 5.4 Rationalization
+### 5.4 AI-Driven Report Rationalization
 
 **Route:** `/rationalization`  
 **Persona:** Migration Lead, BW Architect
 
-The decision hub for every object in scope:
+**Analysis Agent — AI-Driven Report Rationalization** — the decision hub for every object in scope:
 
-- Summary KPIs: Migrate / Retire / Consolidate / Pending counts
-- Decision table with inline `<select>` per object — clicking saves immediately via the service layer
-- Filter by decision, complexity, or domain
-- AI-suggested decisions pre-filled based on usage, complexity, and dependency analysis
-
-How it fits the journey: This screen drives the entire downstream scope. Objects marked Retire are removed from Wave Planner scope (reducing effort by ~18% in the demo). Objects marked Migrate flow into Wave Planning and the Extractor/Query pipelines.
+- Summary KPIs: Migrate / Retire / Consolidate / Pending counts with percentages
+- Decision table with inline `<select>` per object — saving immediately via the service layer
+- AI-Driven Report Rationalization Agent pre-classifies 89% of inventory; human review locks final decisions
+- Objects marked Retire are removed from Wave Planner scope; objects marked Migrate flow into Step 2
 
 ---
 
-### 5.5 TCO Calculator
+### 5.5 TCO Calculator & Sizing Recommender
 
 **Route:** `/tco-calculator`  
 **Persona:** Executive Sponsor, Migration Lead
 
-Live cost modelling with four adjustable sliders:
+**Analysis Agent — TCO Calculator + Sizing Recommender** — live cost modelling:
 
-- BW infrastructure cost per year
-- BDC licence cost per year
-- Migration effort (person-months)
-- Estimated duration (months)
+- Four adjustable sliders: BW infrastructure cost, BDC licence, migration effort, duration
+- **AI Sizing Recommender panel**: recommends BDC tenant size, validates migration duration estimate, and identifies cost optimisation opportunities
+- Output: 3-year BW vs BDC cost comparison, migration cost, net savings ($3.8M in demo), payback period
+- Bar chart visualisation updates in real time as sliders move
 
-Output: 3-year BW cost, 3-year BDC cost, migration cost, net savings, and a bar chart visualisation. All values update in real time as sliders move — no form submission required.
+---
 
-How it fits the journey: Used in the business case phase to justify the migration investment. The Executive Sponsor uses this to confirm the $3.8M projected savings before approving the programme budget.
+### Step 2 · Lift to BW PCE (Optional)
+
+*Goal: Optional lift-and-shift to BW Private Cloud Edition as an interim step — keep investment while accelerating shift.*  
+*AI Accelerator: Lift-Shift Orchestration Agents — Intelligent Object Migration, Code Modernization, Auto TSD Generation*
 
 ---
 
@@ -264,131 +257,130 @@ How it fits the journey: Used in the business case phase to justify the migratio
 **Route:** `/pce-planner`  
 **Persona:** Migration Lead, BW Architect
 
-For organisations choosing an interim lift-and-shift to BW Private Cloud Edition before full BDC migration:
+**Lift-Shift Orchestration Agents** — manages the optional PCE migration path:
 
-- Compatibility assessment table: 5 categories (Custom ABAP, Process Chains, BAdIs, Legacy DSOs, Open Hub) with compatible vs. needs-fix counts
-- Timeline: Remediation Sprint → System Copy → Validation → Go-Live PCE
-- 87% compatibility score; 48 remediation items identified
-
-How it fits the journey: Optional Phase 2 step. If business constraints prevent immediate BDC migration, PCE provides a cloud-ready interim state while the full BDC programme continues in parallel.
+- **Intelligent Object Migration Agent**: auto-migrates compatible objects to PCE with zero-touch validation
+- **Code Modernization Agent**: analyzes and adapts custom ABAP objects for PCE compatibility with diff review
+- **Auto TSD Generation**: Technical Specification Documents auto-generated for all migrated objects
+- Compatibility assessment table: Custom ABAP, Process Chains, BAdIs, Legacy DSOs, Open Hub (87% compatible in demo)
+- Remediation timeline: Remediation Sprint → System Copy & Upgrade → Validation & UAT → Go-Live PCE
 
 ---
 
-### 5.7 Wave Planner
+### 5.7 Migration Wave Planner
 
 **Route:** `/wave-planner`  
 **Persona:** Migration Lead
 
-Kanban-style view of all migration waves:
+**Step 2 Lift-Shift** — Kanban-style wave execution with quality assurance:
 
 - 4 wave columns (Finance Core, Sales Analytics, HR & Payroll, Supply Chain)
-- Each wave shows: owner, target date, progress %, quality gate status, open issues
+- Each wave: owner, target date, progress %, quality gate status, open issues, blockers
 - Object cards within each wave show status (In Progress, Done, Blocked)
-- Blocked objects have red-bordered cards with blocker notes
-- Empty waves show a placeholder with a button to add objects from Rationalization
-
-How it fits the journey: After Rationalization, the Migration Lead assigns Migrate-flagged objects to waves. During execution, this is the daily view for tracking wave health and resolving blockers.
+- Blocked objects show red-bordered cards with blocker notes and link to Action Center
+- Empty waves prompt assignment from Rationalization
 
 ---
 
-### 5.8 Extractor → CDS Studio
-
-**Route:** `/extractor-cds`  
-**Persona:** BW Architect, AI Engineer
-
-AI-powered ABAP-to-CDS conversion workbench:
-
-- Extractor catalog: lists all DataSources/Extractors with type, status, complexity, delta mode
-- Selected extractor view:
-  - ABAP source code (read-only reference)
-  - AI-generated CDS view with delta annotations
-  - Field mapping table: source field → target field with auto/manual badge
-  - AI insights panel with warnings and suggestions
-- Approve generated CDS → triggers deployment action in Action Center
-
-How it fits the journey: The most technically intensive screen. BW Architects validate AI-generated extraction logic before it is deployed to BDC. Every generated CDS view requires human approval — it never deploys automatically.
-
----
-
-### 5.9 Query Analyzer & FSD Generator
+### 5.8 BEX Query Analyzer & Auto-TSD Generator
 
 **Route:** `/query-analyzer`  
 **Persona:** BW Architect, Data Product Owner
 
-Converts BEx queries into documented Functional Specifications:
+**Analysis Agent — BEX Query Analysis & FSD/TSD Creation**:
 
 - Query selector: lists all BEx queries with InfoProvider, usage/month, complexity
-- AI breakdown panel: analyses variables, calculated key figures, exceptions, and risks
-- Key figures table with migration status per measure
-- FSD Preview: formatted specification document describing the equivalent BDC Analytic Model, including variable definitions, filter logic, and exception rules
-- Download FSD / Approve for development buttons
-
-How it fits the journey: BEx queries cannot be migrated 1:1 to BDC. This screen documents what each query does, flags risks, and produces the FSD that developers use to build the equivalent in BDC.
+- AI breakdown panel: analyses variables, calculated key figures, exceptions, and migration risks
+- Key figures table with auto-mapped vs manual BDC equivalents
+- **FSD/TSD Preview**: auto-generated Functional Specification + Technical Specification Document describing the equivalent BDC Analytic Model
+- Export FSD/TSD, push to Jira, or send mapping to Data Product
 
 ---
 
-### 5.10 InfoProvider Mapper
+### Step 3 · Shift to BDC Data Products
+
+*Goal: Convert InfoProviders into governed, certified data products in BDC — re-architecture with confidence.*  
+*AI Accelerator: Code Modernization Agent + Consumption & Governance Agents*
+
+---
+
+### 5.9 Extractor → CDS Converter
+
+**Route:** `/extractor-cds`  
+**Persona:** BW Architect, AI Engineer
+
+**Code Modernization Agent — Re-architecture with confidence**:
+
+- Extractor catalog: all DataSources/Extractors with type, status, complexity, delta mode
+- ABAP source code (read-only reference) alongside AI-generated CDS view with delta annotations
+- Field mapping table: source field → target field with auto/manual badge
+- AI conversion analysis panel with confidence scores and warnings
+- Approve generated CDS → triggers deployment action in Action Center
+
+---
+
+### 5.10 InfoProvider → Data Product Mapper
 
 **Route:** `/infoprovider-mapper`  
 **Persona:** Data Product Owner, BW Architect
 
-Maps source BW InfoProviders to target BDC Data Products:
+**Step 3 · Re-architecture with confidence** — maps source InfoProviders to target BDC Data Products:
 
-- Source objects table grouped by domain cluster (Finance, Sales, HR) with colour coding
-- Target Data Product cards showing which InfoProviders contribute to each product
-- AI mapping recommendation panel explaining the proposed grouping rationale
-- Approve Mapping button
-
-How it fits the journey: Bridges the migration factory (extractors/queries) and the data product studio. This screen defines the many-to-one mapping: multiple ADSOs become one certified Data Product.
+- Source objects table grouped by AI-proposed domain cluster (Finance Core, Sales Analytics, HR Analytics) with colour coding
+- Target Data Product cards showing which InfoProviders contribute to each product, domain, BDC Space, and owner
+- AI mapping recommendation panel with rationale and confidence scores (avg 87% in demo)
+- Approve Mapping → Data Product Studio
 
 ---
 
-### 5.11 Data Product Studio
+### 5.11 BDC Data Product Studio
 
 **Route:** `/data-product-studio`  
 **Persona:** Data Product Owner, Data Steward
 
-Full lifecycle management for each BDC Data Product:
+**Step 3 · Data Catalogue & Governance** — full lifecycle management for each BDC Data Product:
 
-- Profile grid: domain, BDC space, owner, steward, version, quality score, certification status
-- KPIs table with definition, source, and current value
-- Glossary terms with approval status
-- Quality rules (threshold, current value, pass/fail)
+- Profile grid: domain, BDC space, owner, steward, version, certification status, tags
+- KPI definitions table with formula, source, and certified status
+- **Business Glossary** terms with approval workflow (unapproved terms highlighted)
+- Quality rules with threshold, current score, and pass/warn/fail status
 - Certification step timeline: Technical Review → Data Steward Signoff → Owner Approval → Published
-
-How it fits the journey: After mapping is approved, Data Product Owners build the product definition in this screen. Certification requires sign-off from multiple roles before the product is published to consumers.
 
 ---
 
-### 5.12 Data Quality Center
+### 5.12 AI-Driven Data Quality Assurance
 
 **Route:** `/data-quality`  
 **Persona:** Data Steward, Migration Lead
 
-Continuous data quality monitoring across five dimensions:
+**Consumption & Governance Agent — AI-Driven Data Quality Assurance**:
 
 - Overall quality score + one KPI card per dimension (Completeness, Accuracy, Consistency, Timeliness, Uniqueness)
-- Rule results table: rule name, dimension, threshold, current value, trend, pass/fail status
-- AI root cause panel: explains why a rule is failing (e.g., "PC_FI_DELTA process chain failed at 04:00 — 48 records missing")
-- Action buttons: Create Remediation Action, Schedule Monitor, View in Action Center
-
-How it fits the journey: Runs continuously once Data Products are published. A quality score below 80% triggers an alert for the Data Steward and is surfaced on the Command Center. The AI root cause saves hours of manual investigation.
+- Rule results table: rule, dimension, records checked, failures, score, pass/fail
+- **AI Root Cause Analysis panel**: explains why a rule is failing with specific process chain and record details
+- Action buttons: Create Remediation Action (routes to Action Center), Mark as Accepted Risk
 
 ---
 
-### 5.13 AI Consumption Copilot
+### Step 4A · AI Driven Consumption
+
+*Goal: Contextual insights driven by persona needs, underpinned by data readiness — NL queries & auto-insights.*  
+*AI Accelerator: Co-pilot for Business + Autonomous Insights Generation Agent*
+
+---
+
+### 5.13 AI Co-pilot for Business
 
 **Route:** `/ai-copilot`  
 **Persona:** Business User, Migration Lead, Executive Sponsor
 
-Natural language interface to migration data and certified BDC Data Products:
+**Consumption & Governance Agent — Co-pilot for Business**:
 
-- Chat interface with confidence score and source citations on every AI response
-- Suggested question chips for common queries
+- Natural language chat interface grounded in certified BDC Data Products
+- Confidence score and source citations on every AI response
+- Suggested questions: migration status, data product quality risks, wave progress, auto-insights
 - Data Product Context panel showing available products and quality scores
-- AI suggested follow-up actions (route to Action Center for execution)
-
-How it fits the journey: The end-state for Business Users who previously used BEx reports. Instead of navigating InfoProviders and queries, they type questions and get answers grounded in certified, quality-validated data.
+- **Autonomous Insights Generation Agent panel**: auto-suggested follow-up actions, scheduled quality scorecards, data catalogue update notifications
 
 ---
 
@@ -397,15 +389,21 @@ How it fits the journey: The end-state for Business Users who previously used BE
 **Route:** `/persona-workspace`  
 **Persona:** All (role-switched via dropdown)
 
-Role-specific KPI dashboards and curated insights:
+**Step 4A · Contextual insights driven by persona needs** — role-specific dashboards:
 
 - Persona selector: Migration Lead, Executive Sponsor, BW Architect, Data Product Owner, Business User
-- KPI row changes per persona (e.g. Migration Lead sees wave progress; Executive Sponsor sees TCO savings)
-- Insight cards: AI-surfaced risk, win, or warning relevant to that persona with action button
-- Recommended questions panel that navigates to Copilot pre-filled
+- KPI row changes per persona (Migration Lead: wave progress & blockers; Executive Sponsor: TCO savings & readiness)
+- AI-surfaced insight cards: risk, win, or warning relevant to that persona with direct action links
+- Recommended questions panel that navigates to AI Co-pilot
+- **Autonomous Insights Generation Agent**: continuously surfaces new insights as data readiness improves
 - Saved Insights list for returning to prior analyses
 
-How it fits the journey: Reduces information overload. Each stakeholder sees only what matters to their role, with direct links to the action or detail screen.
+---
+
+### Step 4B · Autonomous Insights to Action
+
+*Goal: Joule agents grounded in BDC execute actions in S/4 and other transactional systems — autonomous actions.*  
+*AI Accelerator: Industry Data Products/Agents — LS, CPG, Retail & Utilities*
 
 ---
 
@@ -414,30 +412,34 @@ How it fits the journey: Reduces information overload. Each stakeholder sees onl
 **Route:** `/action-center`  
 **Persona:** Migration Lead, AI Engineer
 
-Human-in-the-loop governance for all AI-proposed actions:
+**Step 4B · Joule agents grounded in BDC for process acceleration**:
 
+- **Industry Data Products & Agents panel**: shows active Joule agents per industry vertical
+  - *Life Sciences (LS)*: batch release compliance agent, regulatory data packages
+  - *CPG (Consumer Products)*: promotion effectiveness agent, margin optimisation actions in S/4
+  - *Retail & Utilities*: inventory replenishment agent, purchase order proposals from BDC demand signals
 - Pending Approval queue: AI-proposed actions with impact description, risk level, and affected objects
-- Approved Today list: actions approved in the last 24 hours
-- Approve / Reject buttons — status updates immediately in local state
-- Audit log: full history of who approved/rejected what and when
-
-How it fits the journey: Ensures no AI action executes without a human decision. The audit log satisfies compliance and change management requirements. Every critical step — retiring objects, deploying CDS views, creating Data Products — passes through this screen.
+- Approve / Reject buttons — no autonomous action executes without a human decision
+- Audit log: full history of who approved/rejected what and when with result
 
 ---
 
-### 5.16 Agent Console
+### 5.16 Agent Orchestration Console
 
 **Route:** `/agent-console`  
 **Persona:** AI Engineer
 
-Operational dashboard for all 8 Infosys Topaz / Anthropic Claude agents:
+**Infosys Topaz Agentic Framework — full observability across all 4 agent tiers**:
 
-- Agent registry with status indicators: Running (green), Processing (orange), Error (red)
+- **4-Tier Framework Overview** grid: Analysis Agents · Lift-Shift Orchestration · Consumption & Governance · Industry Data Products — with live status per agent
+- Agent registry with status indicators: Running (green), Processing (orange), Idle (grey), Error (red)
 - Recent tool calls table: agent, tool, parameters, result, timestamp
 - Error log with stack traces and retry status
-- Prompt version table for tracking prompt changes across agents
+- Prompt version table for tracking prompt changes across all agents
 
-How it fits the journey: Used by AI Engineers to monitor agent health, debug failures, and tune prompts. If an agent fails mid-pipeline (e.g. CDS Generator crashes on a complex ABAP routine), the error appears here with enough context to diagnose and restart.
+---
+
+### Administration
 
 ---
 
@@ -448,16 +450,13 @@ How it fits the journey: Used by AI Engineers to monitor agent health, debug fai
 
 Manage all cockpit users across the migration programme:
 
-- User directory with search, role filter, and status filter
-- Per-user: avatar, name, email, role badge, team, status (Active/Inactive/Pending), last login, screen access count
-- Edit user: side panel with full profile and per-screen access toggle
-- Activate / Deactivate button per user
-- Add User modal: name, email, team, role — sends invitation email on confirmation
-- Role Definitions panel: documents what each role can access
-- Screen Access Matrix: shows how many users have access to each functional area
-- Recent Activity log: last 5 actions taken by any user
-
-How it fits the journey: As the migration programme grows, new architects, data stewards, and business users are onboarded here. Role-based access ensures that Business Users cannot accidentally approve AI actions or view sensitive architecture screens.
+- User directory with search, role filter, and status filter (Active / Inactive / Pending)
+- Per-user: avatar, name, email, role badge, team, last login, screen access count
+- Edit user side panel with full profile and per-screen access toggle
+- Add User modal: name, email, team, role — sends invitation on confirmation
+- Role Definitions panel: documents what each role can access across the 5 steps
+- Screen Access Matrix: shows how many users can access each step (Step 1 through Step 4B)
+- Recent Activity log
 
 ---
 
@@ -466,27 +465,22 @@ How it fits the journey: As the migration programme grows, new architects, data 
 **Route:** `/connections`  
 **Persona:** Migration Lead, IT Administrator, AI Engineer
 
-Centralised connection management for all external systems:
+Centralised connection management — must be configured before Step 1 (BW Discovery) can run:
 
 **BW Source Systems tab:**
 - Card per BW system (PRD, QAS, DEV) with host, port, client, RFC user, DB size, last scan date
-- Real-time Test Connection button — simulates latency and returns a live pass/fail
-- Run Scan button — triggers the BW object discovery scan
-- Error cards highlighted in red with action notes (e.g. "RFC user password expired")
+- Real-time Test Connection button and Run Scan button
+- Error cards highlighted in red with action notes
 
 **BDC Target Tenants tab:**
-- Card per BDC tenant (Production, Development) with BTP host, tenant ID, region, OAuth client, Datasphere spaces
-- Published vs Draft product counts
-- Test Connection and Open in BDC Console buttons
+- Card per BDC tenant with BTP host, tenant ID, region, OAuth client, Datasphere spaces
+- Published vs Draft product counts per tenant
 
 **External Integrations tab:**
-- Table of all 6 integrations: Jira, Microsoft Teams, ServiceNow, Anthropic Claude API, Infosys Topaz, GitHub Enterprise
+- Table of all integrations: Jira, Microsoft Teams, ServiceNow, Anthropic Claude API, Infosys Topaz, GitHub Enterprise
 - Status, endpoint URL, last tested, notes per integration
-- Test and Edit buttons
 
-**Connection Health Overview:** summary panel showing live status of all connections across all types.
-
-How it fits the journey: Must be configured before BW Discovery can run (requires valid BW RFC connection) and before any CDS views can be deployed (requires BDC OAuth token). Errors here block the entire migration pipeline.
+**Connection Health Overview:** live status summary across all connection types.
 
 ---
 
@@ -497,15 +491,15 @@ All mock data lives in `src/data/`. Each file maps directly to one domain and on
 | File | Service Functions | Used By |
 |------|-----------------|---------|
 | `dashboard.json` | `getDashboard` | Command Center |
-| `bwObjects.json` | `getBWObjects`, `getBWObjectById` | BW Discovery, Dependency Explorer |
+| `bwObjects.json` | `getBWObjects`, `getBWObjectById` | BW Discovery, Dependency Explorer, InfoProvider Mapper |
 | `waves.json` | `getWaves`, `getWaveById` | Wave Planner, Persona Workspace |
-| `rationalization.json` | `getRationalization`, `updateDecision` | Rationalization |
-| `extractors.json` | `getExtractors`, `getExtractorById` | Extractor → CDS Studio |
-| `queries.json` | `getQueries`, `getQueryById` | Query Analyzer |
-| `dataProducts.json` | `getDataProducts`, `getDataProductById` | InfoProvider Mapper, Data Product Studio, AI Copilot |
-| `actions.json` | `getActions`, `approveAction` | Action Center |
-| `agents.json` | `getAgents` | Agent Console |
-| `copilot.json` | `getCopilotConfig`, `sendCopilotMessage` | AI Copilot |
+| `rationalization.json` | `getRationalization`, `updateDecision` | AI-Driven Report Rationalization |
+| `extractors.json` | `getExtractors`, `getExtractorById` | Extractor → CDS Converter |
+| `queries.json` | `getQueries`, `getQueryById` | BEX Query Analyzer & Auto-TSD Generator |
+| `dataProducts.json` | `getDataProducts`, `getDataProductById` | InfoProvider Mapper, Data Product Studio, AI Co-pilot |
+| `actions.json` | `getActions`, `approveAction` | Autonomous Action Center |
+| `agents.json` | `getAgents` | Agent Orchestration Console |
+| `copilot.json` | `getCopilotConfig`, `sendCopilotMessage` | AI Co-pilot for Business |
 | `users.json` | `getUsers` | User Management |
 | `connections.json` | `getConnections` | Connections |
 
@@ -583,10 +577,23 @@ const apiFetch = (path, opts = {}) =>
 
 | Persona | Primary Screens | Key Actions |
 |---------|----------------|-------------|
-| Executive Sponsor | Command Center, TCO Calculator, Persona Workspace | Read-only; views savings and readiness |
-| Migration Lead | All screens | Approves actions, owns wave progress |
-| BW Architect | Discovery, Dependency, Rationalization, Extractor, Query | Validates AI-generated technical artefacts |
-| Data Product Owner | InfoProvider Mapper, Data Product Studio, Data Quality, Copilot | Certifies and publishes Data Products |
-| Data Steward | Data Quality, Data Product Studio | Signs off on quality and glossary |
-| Business User | AI Copilot, Persona Workspace | Self-service insights in natural language |
-| AI Engineer | Agent Console, Action Center, Connections | Monitors agents, manages connections |
+| Executive Sponsor | Command Center, TCO Calculator & Sizing Recommender, Persona Workspace | Read-only; views savings and readiness |
+| Migration Lead | All screens | Approves actions, owns wave progress, locks rationalization decisions |
+| BW Architect | BW Discovery, Dependency Explorer, Rationalization, Extractor → CDS, BEX Query Analyzer | Validates AI-generated technical artefacts (CDS views, TSDs) |
+| Data Product Owner | InfoProvider Mapper, BDC Data Product Studio, AI-Driven DQA, AI Co-pilot | Certifies and publishes Data Products |
+| Data Steward | AI-Driven Data Quality Assurance, BDC Data Product Studio | Signs off on quality scores and business glossary |
+| Business User | AI Co-pilot for Business, Persona Workspace | Self-service NL queries and auto-insights |
+| AI Engineer | Agent Orchestration Console, Autonomous Action Center, Connections | Monitors 4-tier agent framework, manages connections |
+
+---
+
+## Migration Step → Screen Mapping
+
+| Migration Step | Screens |
+|----------------|---------|
+| Step 1 · Assess & Plan | BW Discovery · Dependency & Lineage Explorer · AI-Driven Report Rationalization · TCO Calculator & Sizing Recommender |
+| Step 2 · Lift to BW PCE (Optional) | BW to BW PCE Planner · Migration Wave Planner · BEX Query Analyzer & Auto-TSD Generator |
+| Step 3 · Shift to BDC Data Products | Extractor → CDS Converter · InfoProvider → Data Product Mapper · BDC Data Product Studio · AI-Driven Data Quality Assurance |
+| Step 4A · AI Driven Consumption | AI Co-pilot for Business · Persona Insight Workspace |
+| Step 4B · Autonomous Insights to Action | Autonomous Action Center · Agent Orchestration Console |
+| Administration | User Management · Connections |
