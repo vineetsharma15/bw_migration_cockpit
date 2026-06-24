@@ -17,9 +17,9 @@ export default function ActionCenter() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Control' }]}
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 4B · Autonomous Insights to Action' }]}
         title="Autonomous Action Center"
-        sub="Review, approve and monitor AI-suggested remediation and workflow actions"
+        sub="Step 4B · Joule agents grounded in BDC for process acceleration — review, approve and monitor AI-triggered actions across S/4 and transactional systems"
         actions={<Badge status="Pending" label={`${summary.pendingApproval} actions pending`} />}
       />
 
@@ -28,6 +28,13 @@ export default function ActionCenter() {
         <KPICard label="Approved Today"     value={<span style={{color:'var(--green)'}}>{summary.approvedToday}</span>} />
         <KPICard label="Executed This Week" value={summary.executedThisWeek} />
         <KPICard label="Success Rate"       value={<span style={{color:'var(--green)'}}>{summary.successRate}%</span>} />
+      </div>
+
+      <div className="ai-panel mb-12">
+        <div className="ai-panel-header"><span className="ai-label">AI</span> Industry Data Products &amp; Agents — BDC Process Acceleration</div>
+        <div className="ai-rec"><span className="ai-rec-icon">🏭</span><div className="ai-rec-text"><strong>LS (Life Sciences):</strong> Batch release compliance agent triggered — auto-generated regulatory data package from BDC.<span className="conf-pill">Active</span></div></div>
+        <div className="ai-rec"><span className="ai-rec-icon">🛒</span><div className="ai-rec-text"><strong>CPG (Consumer Products):</strong> Promotion effectiveness Joule agent surfaced 3 margin optimisation actions in S/4 pricing module.</div></div>
+        <div className="ai-rec"><span className="ai-rec-icon">🏪</span><div className="ai-rec-text"><strong>Retail &amp; Utilities:</strong> Inventory replenishment agent executed 12 purchase order proposals from BDC demand signals — pending approval below.</div></div>
       </div>
 
       <div className="card mb-12">

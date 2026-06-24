@@ -15,9 +15,9 @@ export default function WavePlanner() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Migration Factory' }]}
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 2 · Lift to BW PCE' }]}
         title="Migration Wave Planner"
-        sub="Group BW objects into waves, assign owners, set dates and validate quality gates"
+        sub="Step 2 Lift-Shift — Group BW objects into waves, assign owners, set dates and validate quality gates with AI assurance"
         actions={<>
           <button className="btn btn-ghost btn-sm">+ New Wave</button>
           <button className="btn btn-primary btn-sm">▶ Start Wave 1</button>

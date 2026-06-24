@@ -14,12 +14,13 @@ export default function QueryAnalyzer() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Migration Factory' }]}
-        title="BW Query Analyzer & FSD Generator"
-        sub="Analyze BEx queries and generate Functional Spec, Technical Spec, and test cases"
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 2 · Lift to BW PCE' }]}
+        title="BEX Query Analyzer & Auto-TSD Generator"
+        sub="Step 2 Analysis Agent — Analyze BEX queries, generate Functional Spec Documents and auto-produce Technical Specification Documents (TSD)"
         actions={<>
-          <button className="btn btn-ghost btn-sm">📄 Export Word/PDF</button>
+          <button className="btn btn-ghost btn-sm">📄 Export FSD/TSD</button>
           <button className="btn btn-ghost btn-sm">📋 Push to Jira</button>
+          <button className="btn btn-ghost btn-sm">⚡ Auto-Generate TSD</button>
           <button className="btn btn-primary btn-sm" onClick={() => navigate('/infoprovider-mapper')}>Send Mapping → Data Product</button>
         </>}
       />
@@ -61,7 +62,7 @@ export default function QueryAnalyzer() {
         {q.fsdDraft && (
           <div className="card">
             <div className="card-header">
-              <span className="card-title">FSD Preview — Auto-Generated</span>
+              <span className="card-title">FSD / TSD Preview — Auto-Generated</span>
               <Badge status="In Progress" label="Draft v1.0" />
             </div>
             <div style={{background:'#f8f9fb',border:'1px solid var(--border)',borderRadius:6,padding:16,fontSize:12,lineHeight:1.7,maxHeight:480,overflowY:'auto'}}>

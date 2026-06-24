@@ -27,9 +27,9 @@ export default function PersonaWorkspace() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'AI Consumption Hub' }]}
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 4A · AI Driven Consumption' }]}
         title="Persona Insight Workspace"
-        sub="Role-specific view of migration insights, KPI dashboards and AI recommendations"
+        sub="Step 4A · Contextual insights driven by persona needs underpinned by data readiness — powered by Autonomous Insights Generation Agent"
         actions={
           <select value={persona} onChange={e => setPersona(e.target.value)}>
             {PERSONAS.map(p => <option key={p}>{p}</option>)}

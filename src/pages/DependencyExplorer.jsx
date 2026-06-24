@@ -11,9 +11,9 @@ export default function DependencyExplorer() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Discovery', to: '/bw-discovery' }, { label: 'Dependency Explorer' }]}
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 1 · Assess & Plan', to: '/bw-discovery' }, { label: 'Lineage Explorer' }]}
         title="Dependency & Lineage Explorer"
-        sub="Visualize upstream/downstream dependencies across extractors, ADSOs, queries and reports"
+        sub="Step 1 Analysis Agent — Visualize upstream/downstream dependencies across extractors, ADSOs, queries and reports for migration impact"
         actions={<>
           <select><option>0FI_GL_4 (ADSO)</option><option>ZSD_BILLING_A</option><option>0SD_C03</option><option>2LIS_02_ITM</option></select>
           <button className="btn btn-ghost btn-sm">🔍 Filter</button>

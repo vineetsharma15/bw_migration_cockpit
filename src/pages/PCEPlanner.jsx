@@ -23,9 +23,9 @@ export default function PCEPlanner() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Migration Factory' }]}
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 2 · Lift to BW PCE' }]}
         title="BW to BW PCE Planner"
-        sub="Optional lift-and-shift to BW Private Cloud Edition as an interim migration step"
+        sub="Step 2 · Optional — Lift-and-shift to BW Private Cloud Edition · Accelerate shift and assure quality with Lift-Shift Orchestration Agents"
         actions={<button className="btn btn-primary btn-sm" onClick={() => navigate('/wave-planner')}>Send to Wave Planner →</button>}
       />
 
@@ -34,6 +34,13 @@ export default function PCEPlanner() {
         <KPICard label="Remediation Items"   value={<span style={{color:'var(--orange)'}}>48</span>} sub="Custom code / deprecated APIs" />
         <KPICard label="Estimated Effort"    value={<>6<span style={{fontSize:14}}>mo</span></>} sub="4 consultants, 2 basis admins" />
         <KPICard label="Risk Level"          value={<span style={{color:'var(--orange)'}}>Medium</span>} sub="15 high-complexity objects" />
+      </div>
+
+      <div className="ai-panel mb-12">
+        <div className="ai-panel-header"><span className="ai-label">AI</span> Lift-Shift Orchestration Agents — Active</div>
+        <div className="ai-rec"><span className="ai-rec-icon">🤖</span><div className="ai-rec-text"><strong>Intelligent Object Migration Agent:</strong> Automatically migrates compatible BW objects to PCE with zero-touch validation. 268 objects queued.<span className="conf-pill">Running</span></div></div>
+        <div className="ai-rec"><span className="ai-rec-icon">🔧</span><div className="ai-rec-text"><strong>Code Modernization Agent:</strong> Analyzes and adapts 44 custom ABAP objects for PCE compatibility. Auto-generates corrected code with diff review.<span className="conf-pill">87%</span></div></div>
+        <div className="ai-rec"><span className="ai-rec-icon">📄</span><div className="ai-rec-text"><strong>Auto TSD Generation:</strong> Technical Specification Documents auto-generated for all migrated objects. Linked to wave tasks in Jira.</div></div>
       </div>
 
       <div className="grid-2">

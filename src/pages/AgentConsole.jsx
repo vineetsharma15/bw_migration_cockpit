@@ -10,9 +10,9 @@ export default function AgentConsole() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Control' }]}
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 4B · Autonomous Insights to Action' }]}
         title="Agent Orchestration Console"
-        sub="Monitor agents, tool calls, memory, prompt versions and error logs · Powered by Anthropic + Infosys Topaz Fabric"
+        sub="Infosys Topaz Agentic Framework — monitor all 4 agent tiers: Analysis · Lift-Shift Orchestration · Consumption &amp; Governance · Industry Data Products"
         actions={<>
           <button className="btn btn-ghost btn-sm">📋 View All Logs</button>
           <button className="btn btn-primary btn-sm">+ Register Agent</button>
@@ -24,6 +24,28 @@ export default function AgentConsole() {
         <KPICard label="Tool Calls (24h)"  value={agents.summary.toolCalls24h.toLocaleString()} />
         <KPICard label="Errors (24h)"      value={<span style={{color:'var(--red)'}}>{agents.summary.errors24h}</span>} />
         <KPICard label="Avg Response Time" value={<>{agents.summary.avgResponseTimeSec}<span style={{fontSize:14}}>s</span></>} />
+      </div>
+
+      <div className="grid-4 mb-12">
+        {[
+          { tier:'Analysis Agents', icon:'🔍', color:'var(--blue)', agents:['Agentic DW System Analysis','TCO Calculator','Sizing Recommender','AI Report Rationalization','BEX Query & FSD Creator'] },
+          { tier:'Lift-Shift Orchestration', icon:'⚙', color:'var(--orange)', agents:['Intelligent Object Migration','Code Modernization','Auto TSD Generation'] },
+          { tier:'Consumption & Governance', icon:'📊', color:'var(--green)', agents:['Data Catalogue & Glossary','AI Data Quality Assurance','Co-pilot for Business','Autonomous Insights Generation'] },
+          { tier:'Industry Data Products', icon:'🏭', color:'var(--purple)', agents:['S/4 Process Acceleration (Joule)','BDC LS Data Products','BDC CPG Data Products','BDC Retail & Utilities'] },
+        ].map(t => (
+          <div key={t.tier} className="card" style={{borderTop:`3px solid ${t.color}`}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
+              <span style={{fontSize:18}}>{t.icon}</span>
+              <span className="font-bold" style={{fontSize:11.5,color:t.color}}>{t.tier}</span>
+            </div>
+            {t.agents.map((a,i) => (
+              <div key={i} style={{display:'flex',alignItems:'center',gap:6,padding:'4px 0',borderTop: i > 0 ? '1px solid var(--border)' : 'none'}}>
+                <span className="dot dot-green" style={{flexShrink:0}} />
+                <span className="text-sm">{a}</span>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
 
       <div className="grid-split-rev mb-12">

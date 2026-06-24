@@ -14,9 +14,9 @@ export default function ExtractorCDS() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Migration Factory' }]}
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 3 · Shift to BDC Data Products' }]}
         title="Extractor → CDS Converter"
-        sub="Analyze BW extractors and generate proposed S/4HANA CDS views with annotations"
+        sub="Step 3 Code Modernization Agent — Re-architecture with confidence: convert BW extractors to S/4HANA CDS views with AI-generated annotations"
         actions={<>
           <button className="btn btn-ghost btn-sm">Validate Output</button>
           <button className="btn btn-primary btn-sm">✅ Approve &amp; Push to Backlog</button>

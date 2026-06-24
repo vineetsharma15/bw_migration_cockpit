@@ -19,9 +19,9 @@ export default function Rationalization() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Assess & Plan' }]}
-        title="Rationalization Workbench"
-        sub="Classify each BW object as Migrate, Retire, Consolidate, Redesign, or Defer"
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 1 · Assess & Plan' }]}
+        title="AI-Driven Report Rationalization"
+        sub="Step 1 Analysis Agent — Classify each BW object as Migrate, Retire, Consolidate, Redesign, or Defer with AI confidence scoring"
         actions={<>
           <button className="btn btn-ghost btn-sm">📤 Export Decisions</button>
           <button className="btn btn-primary btn-sm" onClick={() => navigate('/wave-planner')}>Push to Wave Planner →</button>
@@ -29,7 +29,7 @@ export default function Rationalization() {
       />
 
       <div className="approval-banner">
-        ⚠ <strong>{summary.pending.count} objects</strong> are awaiting your decision. AI has pre-classified 89% of inventory.
+        🤖 <strong>AI-Driven Report Rationalization Agent</strong> has pre-classified 89% of inventory. <strong>{summary.pending.count} objects</strong> await your final decision.
         <button className="btn btn-primary btn-sm" style={{marginLeft:'auto'}}>Review AI Decisions</button>
       </div>
 

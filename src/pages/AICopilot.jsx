@@ -6,7 +6,7 @@ import PageHeader from '../components/common/PageHeader'
 import Badge from '../components/common/Badge'
 
 const INITIAL_MESSAGES = [
-  { role: 'agent', text: "Hello! I can help you explore your BW migration status, analyze data products, or answer business questions using certified BDC data. What would you like to know?" }
+  { role: 'agent', text: "Hello! I'm your AI Co-pilot for Business — powered by the Infosys Topaz Agentic Framework (Step 4A · AI Driven Consumption). I can answer NL queries about your BW migration status, surface auto-insights from certified BDC data products, and help business users get contextual answers without writing code. What would you like to explore?" }
 ]
 
 export default function AICopilot() {
@@ -34,9 +34,9 @@ export default function AICopilot() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'AI Consumption Hub' }]}
-        title="AI Consumption Copilot"
-        sub="Ask questions about migration status, data products, and business insights"
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 4A · AI Driven Consumption' }]}
+        title="AI Co-pilot for Business"
+        sub="Step 4A · NL queries &amp; auto-insights — ask questions about migration status, certified BDC data products, and business KPIs"
         actions={<Badge status="Running" label="● 3 data products available" />}
       />
 
@@ -77,8 +77,9 @@ export default function AICopilot() {
               {[
                 'Which migrated finance data products have a quality risk?',
                 'What is the current migration readiness score?',
-                'Show Wave 1 progress',
-                'Which BEx queries have most users?',
+                'Show Wave 1 progress and blockers',
+                'Generate auto-insights for Sales Analytics data product',
+                'Which BEX queries have not been migrated yet?',
               ].map(q => (
                 <span key={q} className="tag" style={{cursor:'pointer'}} onClick={() => send(q)}>{q}</span>
               ))}
@@ -103,10 +104,11 @@ export default function AICopilot() {
             </div>
           </div>
           <div className="ai-panel">
-            <div className="ai-panel-header"><span className="ai-label">AI</span> Suggested Follow-up Actions</div>
-            <div className="ai-rec"><span className="ai-rec-icon">⚡</span><div className="ai-rec-text">Create a remediation action for PC_FI_DELTA timeliness fix</div></div>
-            <div className="ai-rec"><span className="ai-rec-icon">📊</span><div className="ai-rec-text">Schedule weekly quality scorecard for Finance Core DP</div></div>
-            <button className="btn btn-primary btn-sm mt-8" onClick={() => navigate('/action-center')}>Review in Action Center</button>
+            <div className="ai-panel-header"><span className="ai-label">AI</span> Autonomous Insights Generation Agent</div>
+            <div className="ai-rec"><span className="ai-rec-icon">⚡</span><div className="ai-rec-text">Create a remediation action for PC_FI_DELTA timeliness fix<span className="conf-pill">Auto-suggested</span></div></div>
+            <div className="ai-rec"><span className="ai-rec-icon">📊</span><div className="ai-rec-text">Weekly quality scorecard for Finance Core DP — scheduled every Monday 08:00</div></div>
+            <div className="ai-rec"><span className="ai-rec-icon">🔔</span><div className="ai-rec-text">Data catalogue updated: 3 new glossary terms approved in BDC Datasphere</div></div>
+            <button className="btn btn-primary btn-sm mt-8" onClick={() => navigate('/action-center')}>Review in Action Center →</button>
           </div>
         </div>
       </div>

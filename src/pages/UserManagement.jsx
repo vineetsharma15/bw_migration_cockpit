@@ -199,10 +199,10 @@ export default function UserManagement() {
             <div style={{display:'flex',flexDirection:'column',gap:6}}>
               {[
                 { area:'Command Center',      count: userList.filter(u => u.screens.includes('All') || u.screens.includes('CommandCenter')).length },
-                { area:'Migration Factory',   count: userList.filter(u => u.screens.includes('All') || u.screens.some(s => ['WavePlanner','ExtractorCDS','QueryAnalyzer'].includes(s))).length },
-                { area:'Data Product Studio', count: userList.filter(u => u.screens.includes('All') || u.screens.includes('DataProductStudio')).length },
-                { area:'AI Copilot',          count: userList.filter(u => u.screens.includes('All') || u.screens.includes('AICopilot')).length },
-                { area:'Agent Console',       count: userList.filter(u => u.screens.includes('All') || u.screens.includes('AgentConsole')).length },
+                { area:'Step 2 · Lift to BW PCE', count: userList.filter(u => u.screens.includes('All') || u.screens.some(s => ['PCEPlanner','WavePlanner','QueryAnalyzer'].includes(s))).length },
+                { area:'Step 3 · BDC Data Products', count: userList.filter(u => u.screens.includes('All') || u.screens.some(s => ['ExtractorCDS','InfoProviderMapper','DataProductStudio','DataQuality'].includes(s))).length },
+                { area:'Step 4A · AI Co-pilot',      count: userList.filter(u => u.screens.includes('All') || u.screens.includes('AICopilot')).length },
+                { area:'Step 4B · Agent Console',    count: userList.filter(u => u.screens.includes('All') || u.screens.includes('AgentConsole')).length },
               ].map(item => (
                 <div key={item.area} className="flex-between" style={{fontSize:12}}>
                   <span>{item.area}</span>

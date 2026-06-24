@@ -34,14 +34,21 @@ export default function TCOCalculator() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Assess & Plan' }]}
-        title="TCO & Business Case Calculator"
-        sub="Compare current BW cost with BW PCE and BDC target scenarios"
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 1 · Assess & Plan' }]}
+        title="TCO Calculator & Sizing Recommender"
+        sub="Step 1 Analysis Agent — Compare current BW cost with BW PCE and BDC target scenarios · AI-powered sizing recommendation"
         actions={<>
           <button className="btn btn-ghost btn-sm">💾 Save Scenario</button>
           <button className="btn btn-primary btn-sm">📊 Export to PPT</button>
         </>}
       />
+
+      <div className="ai-panel mb-12">
+        <div className="ai-panel-header"><span className="ai-label">AI</span> Sizing Recommender</div>
+        <div className="ai-rec"><span className="ai-rec-icon">📐</span><div className="ai-rec-text"><strong>BDC Tenant Size:</strong> Based on {fteCost} FTE and ${(infraCost/1000000).toFixed(1)}M infra spend, recommend <strong>Medium Enterprise</strong> BDC tenant (S/4HANA sourced, 2 Datasphere spaces).<span className="conf-pill">88%</span></div></div>
+        <div className="ai-rec"><span className="ai-rec-icon">⏱</span><div className="ai-rec-text"><strong>Migration Duration:</strong> AI estimates <strong>{migrationMonths} months</strong> based on object complexity and FTE capacity — aligns with selected input.<span className="conf-pill">84%</span></div></div>
+        <div className="ai-rec"><span className="ai-rec-icon">💡</span><div className="ai-rec-text"><strong>Cost Optimisation:</strong> Retiring inactive objects first (Wave 1) can reduce BDC storage cost by ~12% and accelerate ROI by 2 months.</div></div>
+      </div>
 
       <div className="grid-split-rev mb-12">
         <div className="card">

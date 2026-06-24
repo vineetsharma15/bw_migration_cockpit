@@ -15,9 +15,9 @@ export default function DataQuality() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Data Product Studio' }]}
-        title="Data Quality Assurance Center"
-        sub="Profile source and target data · Score quality · Remediate issues"
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 3 · Shift to BDC Data Products' }]}
+        title="AI-Driven Data Quality Assurance"
+        sub="Step 3 Consumption &amp; Governance Agent — Profile source and target data · Score quality · AI-driven root cause analysis and remediation"
         actions={<>
           <button className="btn btn-ghost btn-sm">🔄 Run Profile</button>
           <button className="btn btn-primary btn-sm" onClick={() => navigate('/action-center')}>Create Remediation Action →</button>

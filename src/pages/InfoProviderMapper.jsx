@@ -19,9 +19,9 @@ export default function InfoProviderMapper() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Data Product Studio' }]}
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 3 · Shift to BDC Data Products' }]}
         title="InfoProvider → Data Product Mapper"
-        sub="Map BW InfoProviders into governed, business-friendly BDC data products"
+        sub="Step 3 · Re-architecture with confidence — Map BW InfoProviders into governed BDC data products with AI clustering"
         actions={<>
           <button className="btn btn-ghost btn-sm">← Back to Discovery</button>
           <button className="btn btn-primary btn-sm" onClick={() => navigate('/data-product-studio')}>Approve Mapping → Data Product Studio</button>

@@ -12,9 +12,9 @@ export default function DataProductStudio() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'InfoProvider Mapper', to: '/infoprovider-mapper' }, { label: 'Data Product Studio' }]}
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 3 · Shift to BDC Data Products' }, { label: 'InfoProvider Mapper', to: '/infoprovider-mapper' }, { label: 'Data Product Studio' }]}
         title="BDC Data Product Studio"
-        sub={`Define semantic layer, KPIs, ownership, glossary and certification for ${dp.name}`}
+        sub={`Step 3 · Define semantic layer, KPIs, data catalogue, business glossary and governance certification for ${dp.name}`}
         actions={<>
           <button className="btn btn-ghost btn-sm" onClick={() => navigate('/data-quality')}>Test Quality →</button>
           <button className="btn btn-primary btn-sm">📤 Publish to Governance</button>

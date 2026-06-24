@@ -7,43 +7,43 @@ const navConfig = [
     ]
   },
   {
-    section: 'Assess & Plan',
+    section: 'Step 1 · Assess & Plan',
     items: [
       { to: '/bw-discovery',        icon: '🔍', label: 'BW Discovery'         },
-      { to: '/dependency-explorer', icon: '🕸', label: 'Dependency Explorer'   },
-      { to: '/rationalization',     icon: '⚖', label: 'Rationalization', badge: '12' },
+      { to: '/dependency-explorer', icon: '🕸',  label: 'Dependency Explorer'  },
+      { to: '/rationalization',     icon: '⚖',  label: 'Rationalization', badge: '12' },
       { to: '/tco-calculator',      icon: '💰', label: 'TCO Calculator'        },
     ]
   },
   {
-    section: 'Migration Factory',
+    section: 'Step 2 · Lift to BW PCE',
     items: [
-      { to: '/pce-planner',   icon: '☁', label: 'BW to BW PCE'     },
-      { to: '/wave-planner',  icon: '📅', label: 'Wave Planner'     },
-      { to: '/extractor-cds', icon: '🔄', label: 'Extractor → CDS' },
-      { to: '/query-analyzer',icon: '📋', label: 'Query Analyzer'   },
+      { to: '/pce-planner',   icon: '☁',  label: 'BW to BW PCE'   },
+      { to: '/wave-planner',  icon: '📅', label: 'Wave Planner'    },
+      { to: '/query-analyzer',icon: '📋', label: 'BEX Query / FSD' },
     ]
   },
   {
-    section: 'Data Product Studio',
+    section: 'Step 3 · Shift to BDC Data Products',
     items: [
-      { to: '/infoprovider-mapper',  icon: '🗺', label: 'InfoProvider Mapper'  },
-      { to: '/data-product-studio',  icon: '🏭', label: 'Data Product Studio'  },
-      { to: '/data-quality',         icon: '🧪', label: 'Data Quality'         },
+      { to: '/extractor-cds',       icon: '🔄', label: 'Extractor → CDS'    },
+      { to: '/infoprovider-mapper',  icon: '🗺', label: 'InfoProvider Mapper' },
+      { to: '/data-product-studio',  icon: '🏭', label: 'Data Product Studio' },
+      { to: '/data-quality',         icon: '🧪', label: 'Data Quality'        },
     ]
   },
   {
-    section: 'AI Consumption',
+    section: 'Step 4A · AI Driven Consumption',
     items: [
-      { to: '/ai-copilot',        icon: '💬', label: 'AI Copilot'        },
-      { to: '/persona-workspace', icon: '👤', label: 'Persona Workspace' },
+      { to: '/ai-copilot',        icon: '💬', label: 'AI Co-pilot'        },
+      { to: '/persona-workspace', icon: '👤', label: 'Persona Workspace'  },
     ]
   },
   {
-    section: 'Control',
+    section: 'Step 4B · Autonomous Insights to Action',
     items: [
       { to: '/action-center', icon: '⚡', label: 'Autonomous Actions', badge: '5' },
-      { to: '/agent-console', icon: '🤖', label: 'Agent Console'               },
+      { to: '/agent-console', icon: '🤖', label: 'Agent Console'                  },
     ]
   },
   {

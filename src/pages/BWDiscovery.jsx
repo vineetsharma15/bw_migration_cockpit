@@ -28,9 +28,9 @@ export default function BWDiscovery() {
   return (
     <>
       <PageHeader
-        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Assess & Plan' }]}
+        crumbs={[{ label: 'Home', to: '/command-center' }, { label: 'Step 1 · Assess & Plan' }]}
         title="BW Landscape Discovery"
-        sub="Connect and scan BW system to inventory objects, data volumes and usage patterns"
+        sub="Agentic DW System Analysis — scan BW system to inventory objects, data volumes, usage patterns and lineage"
         actions={<>
           <button className="btn btn-ghost btn-sm">📤 Export Inventory</button>
           <button className="btn btn-primary btn-sm">🔄 Rescan System</button>
